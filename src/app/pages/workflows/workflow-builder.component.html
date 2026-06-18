@@ -1,0 +1,527 @@
+<div class="ds-page-content__heading wf-builder-heading">
+  <h1 class="ds-page-content__title ds-sr-only">Workflow Builder</h1>
+</div>
+
+<div class="ds-page-content__main wf-builder-main">
+  <div class="wf-builder">
+
+    <!-- Page header -->
+    <header class="wf-builder-header">
+      <button type="button"
+              class="ds-icon-button ds-icon-button--outlined ds-icon-button--sm"
+              aria-label="Back to workflow list"
+              (click)="back()">
+        <span class="ds-icon" aria-hidden="true">arrow_back</span>
+      </button>
+      <div class="wf-builder-header__text">
+        <div class="wf-builder-header__breadcrumb">
+          Workflows · {{ wf().triggerCategoryLabel }} · {{ wf().triggerLabel }}
+        </div>
+        <input class="wf-builder-header__name"
+               type="text"
+               [value]="wf().name"
+               (input)="setName($any($event.target).value)"
+               placeholder="Untitled workflow"
+               aria-label="Workflow name" />
+      </div>
+      <label class="ds-toggle wf-active-toggle">
+        <input type="checkbox" role="switch" class="ds-toggle__control"
+               [checked]="wf().active"
+               (change)="setActive($any($event.target).checked)" />
+        <span class="ds-toggle__track"><span class="ds-toggle__thumb"></span></span>
+        <span class="ds-toggle__label">{{ wf().active ? 'Active' : 'Inactive' }}</span>
+      </label>
+    </header>
+
+    <!-- Scrollable body -->
+    <div class="wf-builder-scroll">
+      <div class="wf-builder-body" [class.has-save-bar]="dirty()">
+
+        <!-- ── Details ────────────────────────────────────────────────────── -->
+        <section class="wf-section">
+          <header class="wf-section__head">
+            <h2 class="ds-form-section-title">Workflow details</h2>
+          </header>
+          <div class="wf-section__body">
+            <p class="wf-section__helper">
+              Name, description, tags, and lifecycle. The trigger is set at creation and cannot be changed.
+            </p>
+
+            <div class="wf-field">
+              <label class="wf-field__label" for="wf-name">
+                Name <span class="wf-field__required">*</span>
+              </label>
+              <div class="ds-input" [class.is-error]="!wf().name.trim()">
+                <div class="ds-input__field">
+                  <input id="wf-name" class="ds-input__control"
+                         type="text"
+                         placeholder="e.g. Route high-priority tickets to on-call"
+                         [value]="wf().name"
+                         (input)="setName($any($event.target).value)" />
+                </div>
+              </div>
+              @if (!wf().name.trim()) {
+                <span class="ds-input__helper is-error" role="alert">Name is required</span>
+              }
+            </div>
+
+            <div class="wf-field">
+              <label class="wf-field__label" for="wf-desc">
+                Description
+                <span class="wf-field__label-helper">Optional. Plain language summary of what this workflow does.</span>
+              </label>
+              <div class="ds-textarea">
+                <div class="ds-textarea__field">
+                  <textarea id="wf-desc"
+                            class="ds-textarea__control"
+                            rows="3"
+                            [value]="wf().description"
+                            (input)="setDescription($any($event.target).value)"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="wf-field-grid">
+              <div class="wf-field">
+                <label class="wf-field__label">
+                  Tags
+                  <span class="wf-field__label-helper">Type to search or press Enter to add a new tag.</span>
+                </label>
+                <div class="wf-tag-input">
+                  <div class="ds-autocomplete">
+                    <div class="ds-autocomplete__field">
+                      <input class="ds-autocomplete__control"
+                             type="text"
+                             [value]="tagDraft()"
+                             [placeholder]="wf().tags.length ? 'Add another tag…' : 'Add tag…'"
+                             role="combobox" aria-label="Add tag"
+                             (input)="setTagDraft($any($event.target).value)"
+                             (focus)="openTagDropdown()"
+                             (blur)="closeTagDropdown()"
+                             (keydown)="onTagKeydown($event)" />
+                      <span class="ds-icon ds-icon--sm ds-autocomplete__arrow" aria-hidden="true">arrow_drop_down</span>
+                    </div>
+                    @if (tagDropdownOpen() && filteredTagSuggestions().length > 0) {
+                      <div class="ds-autocomplete__panel wf-tag-panel" role="listbox" aria-label="Tag suggestions">
+                        @for (s of filteredTagSuggestions(); track s) {
+                          <div class="mat-mdc-option wf-tag-option" role="option" tabindex="-1"
+                               (mousedown)="$event.preventDefault(); addTag(s)">{{ s }}</div>
+                        }
+                      </div>
+                    }
+                  </div>
+                  @if (wf().tags.length > 0) {
+                    <div class="wf-tag-chips" role="list" aria-label="Selected tags">
+                      @for (t of wf().tags; track t) {
+                        <span class="ds-tag ds-tag--sm" role="listitem">
+                          <span class="ds-tag__label">{{ t }}</span>
+                          <button class="ds-tag__remove" type="button" [attr.aria-label]="'Remove ' + t" (click)="removeTag(t)">
+                            <span class="ds-icon ds-icon--xs" aria-hidden="true">close</span>
+                          </button>
+                        </span>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <div class="wf-field">
+                <label class="wf-field__label" for="wf-exp">
+                  Expires on
+                  <span class="wf-field__label-helper">Optional. After this date the workflow stops running.</span>
+                </label>
+                <div class="ds-input">
+                  <div class="ds-input__field">
+                    <input id="wf-exp"
+                           class="ds-input__control"
+                           type="text"
+                           placeholder="mm / dd / yyyy"
+                           [value]="wf().expiresAt"
+                           (input)="setExpiresAt($any($event.target).value)" />
+                    <button type="button" class="ds-input__action" aria-label="Open date picker">
+                      <span class="ds-icon ds-icon--sm" aria-hidden="true">calendar_today</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="wf-field">
+              <label class="wf-field__label">
+                Trigger
+                <span class="wf-field__label-helper">Trigger is set when the workflow is created and cannot be changed.</span>
+              </label>
+              <div class="wf-trigger-pill">
+                <span class="ds-icon wf-trigger-pill__icon" aria-hidden="true">{{ wf().triggerIcon }}</span>
+                <span class="wf-trigger-pill__label">{{ wf().triggerLabel }}</span>
+                <span class="ds-label ds-label--grey ds-label--xs">{{ wf().categoryId }}</span>
+              </div>
+              <div class="wf-trigger-config-slot">
+                <header class="wf-trigger-config-slot__head">
+                  <h3>No configuration required</h3>
+                  <span>This trigger fires automatically — no extra setup needed.</span>
+                </header>
+                <div class="wf-trigger-config-slot__body">
+                  <em>Trigger: {{ wf().triggerLabel }}.</em>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── Conditions ────────────────────────────────────────────────── -->
+        <section class="wf-section">
+          <header class="wf-section__head">
+            <h2 class="ds-form-section-title">Conditions</h2>
+            <span class="ds-label ds-label--grey ds-label--sm ds-label--pill">{{ totalConditions() }}</span>
+            <div class="wf-section__head-spacer"></div>
+            <button class="ds-button ds-button--outlined ds-button--sm ds-button--leading-icon"
+                    type="button" (click)="addGroup()">
+              <span class="ds-icon" aria-hidden="true">add</span>
+              Add group
+            </button>
+          </header>
+          <div class="wf-section__body">
+            @if (wf().conditions.groups.length === 0) {
+              <p class="wf-section__helper">
+                No conditions — this workflow will run on every trigger event.
+              </p>
+              <div class="wf-mini-empty">
+                <span class="ds-icon wf-mini-empty__icon" aria-hidden="true">filter_alt_off</span>
+                <div class="wf-mini-empty__title">No conditions set</div>
+                <div class="wf-mini-empty__hint">
+                  This workflow will run on every trigger event. Add a condition group to scope it.
+                </div>
+                <button class="ds-button ds-button--outlined ds-button--sm ds-button--leading-icon"
+                        type="button" (click)="addGroup()">
+                  <span class="ds-icon" aria-hidden="true">add</span>
+                  Add condition group
+                </button>
+              </div>
+            }
+            @if (wf().conditions.groups.length > 0) {
+              <p class="wf-section__helper">
+                Run this workflow when @if (wf().conditions.groups.length === 1) { these conditions match. } @else { condition groups are joined with {{ wf().conditions.groupJoin }}. }
+              </p>
+              <div class="wf-condition-groups">
+                @for (g of wf().conditions.groups; track g.id; let gi = $index) {
+                  @if (gi > 0) {
+                    <div class="wf-group-join">
+                      <div class="wf-group-join__line"></div>
+                      <div class="wf-segment" role="group" aria-label="Join mode between groups">
+                        @for (opt of ['AND', 'OR']; track opt) {
+                          <button type="button" class="wf-segment__btn"
+                                  [class.is-selected]="opt === wf().conditions.groupJoin"
+                                  (click)="setGroupJoin($any(opt))">
+                            {{ opt }}
+                          </button>
+                        }
+                      </div>
+                      <div class="wf-group-join__line"></div>
+                    </div>
+                  }
+                  <div class="wf-condition-group">
+                    <header class="wf-condition-group__head">
+                      <span class="wf-condition-group__num">{{ gi + 1 }}</span>
+                      <span class="wf-condition-group__label">Match</span>
+                      <div class="wf-segment" role="group" aria-label="Match all or any">
+                        <button type="button" class="wf-segment__btn"
+                                [class.is-selected]="g.mode === 'ALL'"
+                                (click)="setGroupMode(g.id, 'ALL')">ALL</button>
+                        <button type="button" class="wf-segment__btn"
+                                [class.is-selected]="g.mode === 'ANY'"
+                                (click)="setGroupMode(g.id, 'ANY')">ANY</button>
+                      </div>
+                      <span class="wf-condition-group__label">
+                        {{ g.mode === 'ALL' ? 'of these are true' : 'of these is true' }}
+                      </span>
+                      <div class="wf-section__head-spacer"></div>
+                      @if (wf().conditions.groups.length > 1) {
+                        <button type="button"
+                                class="ds-icon-button ds-icon-button--icon ds-icon-button--sm"
+                                aria-label="Delete group"
+                                (click)="removeGroup(g.id)">
+                          <span class="ds-icon" aria-hidden="true">delete</span>
+                        </button>
+                      }
+                    </header>
+
+                    <div class="wf-condition-group__body">
+                      @if (g.rules.length === 0) {
+                        <div class="wf-condition-empty">No conditions in this group yet.</div>
+                      }
+                      @for (r of g.rules; track r.id) {
+                        <div class="wf-cond-row">
+                          <!-- Field select -->
+                          <div class="ds-select wf-cond-select wf-cond-select--field"
+                               [class.is-open]="isSelectOpen(r.id + '-field')">
+                            <div class="ds-select__field-row">
+                              <div class="ds-select__field" (click)="toggleSelect(r.id + '-field', $event)">
+                                <input class="ds-select__control" type="text" readonly
+                                       [value]="r.field"
+                                       placeholder="Select field…"
+                                       role="combobox" aria-haspopup="listbox" aria-label="Field"
+                                       [attr.aria-expanded]="isSelectOpen(r.id + '-field')" />
+                                <span class="ds-icon ds-icon--sm ds-select__arrow" aria-hidden="true">arrow_drop_down</span>
+                              </div>
+                              @if (isSelectOpen(r.id + '-field')) {
+                                <div class="ds-select__dropdown" role="listbox" aria-label="Field">
+                                  <div class="ds-menu">
+                                    @for (f of fieldOptions; track f) {
+                                      <button type="button" class="ds-menu__item" role="option"
+                                              [class.ds-menu__item--selected]="r.field === f"
+                                              [attr.aria-selected]="r.field === f"
+                                              (click)="chooseField(g.id, r.id, f, $event)">
+                                        @if (r.field === f) {
+                                          <span class="ds-menu__item-check"><span class="ds-icon ds-icon--filled" aria-hidden="true">check</span></span>
+                                        }
+                                        {{ f }}
+                                      </button>
+                                    }
+                                  </div>
+                                </div>
+                              }
+                            </div>
+                          </div>
+
+                          <!-- Operator select -->
+                          @if (r.field) {
+                            <div class="ds-select wf-cond-select wf-cond-select--operator"
+                                 [class.is-open]="isSelectOpen(r.id + '-operator')">
+                              <div class="ds-select__field-row">
+                                <div class="ds-select__field" (click)="toggleSelect(r.id + '-operator', $event)">
+                                  <input class="ds-select__control" type="text" readonly
+                                         [value]="r.operator"
+                                         placeholder="Operator"
+                                         role="combobox" aria-haspopup="listbox" aria-label="Operator"
+                                         [attr.aria-expanded]="isSelectOpen(r.id + '-operator')" />
+                                  <span class="ds-icon ds-icon--sm ds-select__arrow" aria-hidden="true">arrow_drop_down</span>
+                                </div>
+                                @if (isSelectOpen(r.id + '-operator')) {
+                                  <div class="ds-select__dropdown" role="listbox" aria-label="Operator">
+                                    <div class="ds-menu">
+                                      @for (o of operatorOptions; track o) {
+                                        <button type="button" class="ds-menu__item" role="option"
+                                                [class.ds-menu__item--selected]="r.operator === o"
+                                                [attr.aria-selected]="r.operator === o"
+                                                (click)="chooseOperator(g.id, r.id, o, $event)">
+                                          @if (r.operator === o) {
+                                            <span class="ds-menu__item-check"><span class="ds-icon ds-icon--filled" aria-hidden="true">check</span></span>
+                                          }
+                                          {{ o }}
+                                        </button>
+                                      }
+                                    </div>
+                                  </div>
+                                }
+                              </div>
+                            </div>
+                          }
+
+                          <!-- Value -->
+                          @if (r.field && r.operator) {
+                            <div class="ds-input wf-cond-row__value">
+                              <div class="ds-input__field">
+                                <input class="ds-input__control"
+                                       type="text"
+                                       [value]="r.value"
+                                       placeholder="Value"
+                                       aria-label="Value"
+                                       (input)="updateRule(g.id, r.id, { value: $any($event.target).value })" />
+                              </div>
+                            </div>
+                          }
+                          @if (!r.field || !r.operator) { <div class="wf-cond-row__filler"></div> }
+
+                          <button type="button"
+                                  class="ds-icon-button ds-icon-button--icon ds-icon-button--sm"
+                                  aria-label="Remove condition"
+                                  (click)="removeRule(g.id, r.id)">
+                            <span class="ds-icon" aria-hidden="true">close</span>
+                          </button>
+                        </div>
+                      }
+                    </div>
+
+                    <footer class="wf-condition-group__foot">
+                      <button class="ds-button ds-button--text ds-button--sm ds-button--leading-icon"
+                              type="button" (click)="addRule(g.id)">
+                        <span class="ds-icon" aria-hidden="true">add</span>
+                        Add condition
+                      </button>
+                    </footer>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- ── Actions ───────────────────────────────────────────────────── -->
+        <section class="wf-section">
+          <header class="wf-section__head">
+            <h2 class="ds-form-section-title">Actions</h2>
+            <span class="ds-label ds-label--grey ds-label--sm ds-label--pill">{{ wf().actions.length }}</span>
+            <div class="wf-section__head-spacer"></div>
+            <div class="wf-action-picker-anchor">
+              <button class="ds-button ds-button--outlined ds-button--sm ds-button--leading-icon"
+                      type="button"
+                      [attr.aria-expanded]="pickerOpen()"
+                      (click)="togglePicker($event)">
+                <span class="ds-icon" aria-hidden="true">add</span>
+                Add action
+              </button>
+              @if (pickerOpen()) {
+                <div class="ds-menu wf-action-picker" role="menu" (click)="$event.stopPropagation()">
+                  <div class="ds-menu__section-label">Assignment</div>
+                  <button type="button" class="ds-menu__item ds-menu__item--indent" role="menuitem" (click)="addAction('assign_agent', 'person', 'Assign to agent')">
+                    <span class="ds-icon ds-icon--sm ds-icon--filled ds-menu__item-icon" aria-hidden="true">person</span>Assign to agent
+                  </button>
+                  <button type="button" class="ds-menu__item ds-menu__item--indent" role="menuitem" (click)="addAction('assign_team', 'groups', 'Assign to team')">
+                    <span class="ds-icon ds-icon--sm ds-icon--filled ds-menu__item-icon" aria-hidden="true">groups</span>Assign to team
+                  </button>
+                  <button type="button" class="ds-menu__item ds-menu__item--indent" role="menuitem" (click)="addAction('assign_round_robin', 'sync', 'Round robin to team')">
+                    <span class="ds-icon ds-icon--sm ds-icon--filled ds-menu__item-icon" aria-hidden="true">sync</span>Round robin to team
+                  </button>
+                  <div class="ds-menu__section-label">Status</div>
+                  <button type="button" class="ds-menu__item ds-menu__item--indent" role="menuitem" (click)="addAction('set_priority', 'flag', 'Set priority')">
+                    <span class="ds-icon ds-icon--sm ds-icon--filled ds-menu__item-icon" aria-hidden="true">flag</span>Set priority
+                  </button>
+                  <button type="button" class="ds-menu__item ds-menu__item--indent" role="menuitem" (click)="addAction('add_tag', 'label', 'Add tag')">
+                    <span class="ds-icon ds-icon--sm ds-icon--filled ds-menu__item-icon" aria-hidden="true">label</span>Add tag
+                  </button>
+                  <div class="ds-menu__section-label">Communication</div>
+                  <button type="button" class="ds-menu__item ds-menu__item--indent" role="menuitem" (click)="addAction('add_comment', 'chat', 'Add comment')">
+                    <span class="ds-icon ds-icon--sm ds-icon--filled ds-menu__item-icon" aria-hidden="true">chat</span>Add comment
+                  </button>
+                  <button type="button" class="ds-menu__item ds-menu__item--indent" role="menuitem" (click)="addAction('add_follower', 'person_add', 'Add follower')">
+                    <span class="ds-icon ds-icon--sm ds-icon--filled ds-menu__item-icon" aria-hidden="true">person_add</span>Add follower
+                  </button>
+                  <div class="ds-menu__section-label">Create</div>
+                  <button type="button" class="ds-menu__item ds-menu__item--indent" role="menuitem" (click)="addAction('create_task', 'task_alt', 'Create task')">
+                    <span class="ds-icon ds-icon--sm ds-icon--filled ds-menu__item-icon" aria-hidden="true">task_alt</span>Create task
+                  </button>
+                  <button type="button" class="ds-menu__item ds-menu__item--indent" role="menuitem" (click)="addAction('create_ticket', 'add_box', 'Create ticket')">
+                    <span class="ds-icon ds-icon--sm ds-icon--filled ds-menu__item-icon" aria-hidden="true">add_box</span>Create ticket
+                  </button>
+                </div>
+              }
+            </div>
+          </header>
+          <div class="wf-section__body">
+            <p class="wf-section__helper">Actions run top-to-bottom in this order when the workflow matches.</p>
+
+            @if (wf().actions.length === 0) {
+              <div class="wf-mini-empty">
+                <span class="ds-icon wf-mini-empty__icon" aria-hidden="true">bolt</span>
+                <div class="wf-mini-empty__title">No actions yet</div>
+                <div class="wf-mini-empty__hint">Add at least one action for this workflow to do anything.</div>
+              </div>
+            }
+
+            <div class="wf-action-list">
+              @for (a of wf().actions; track a.id; let ai = $index) {
+                <div class="wf-action-card" [class.is-error]="a.hasError">
+                  <div class="wf-action-card__head" (click)="toggleAction(a.id)">
+                    <div class="wf-action-card__sort">
+                      <button type="button" class="ds-icon-button ds-icon-button--icon ds-icon-button--sm"
+                              aria-label="Move action up"
+                              [disabled]="ai === 0"
+                              (click)="$event.stopPropagation(); moveAction(a.id, -1)">
+                        <span class="ds-icon ds-icon--sm" aria-hidden="true">expand_less</span>
+                      </button>
+                      <button type="button" class="ds-icon-button ds-icon-button--icon ds-icon-button--sm"
+                              aria-label="Move action down"
+                              [disabled]="ai === wf().actions.length - 1"
+                              (click)="$event.stopPropagation(); moveAction(a.id, +1)">
+                        <span class="ds-icon ds-icon--sm" aria-hidden="true">expand_more</span>
+                      </button>
+                    </div>
+                    <span class="wf-action-card__index">{{ ai + 1 }}</span>
+                    <span class="wf-action-card__icon" [class.is-error]="a.hasError">
+                      <span class="ds-icon ds-icon--sm" aria-hidden="true">{{ a.icon }}</span>
+                    </span>
+                    <div class="wf-action-card__text">
+                      <div class="wf-action-card__name">{{ a.name }}</div>
+                      @if (a.summary) {
+                        <div class="wf-action-card__summary" [class.is-error]="a.hasError">
+                          @if (a.hasError) {
+                            <span class="ds-icon ds-icon--sm ds-icon--filled" aria-hidden="true">error</span>
+                          }
+                          {{ a.summary }}
+                        </div>
+                      }
+                    </div>
+                    <button type="button"
+                            class="ds-icon-button ds-icon-button--icon ds-icon-button--sm"
+                            aria-label="Delete action"
+                            (click)="$event.stopPropagation(); removeAction(a.id)">
+                      <span class="ds-icon" aria-hidden="true">delete</span>
+                    </button>
+                    <button type="button"
+                            class="ds-icon-button ds-icon-button--icon ds-icon-button--sm"
+                            [attr.aria-label]="a.expanded ? 'Collapse action' : 'Expand action'"
+                            [attr.aria-expanded]="a.expanded"
+                            (click)="$event.stopPropagation(); toggleAction(a.id)">
+                      <span class="ds-icon wf-action-card__chevron"
+                            [class.is-expanded]="a.expanded"
+                            aria-hidden="true">expand_more</span>
+                    </button>
+                  </div>
+                  @if (a.expanded) {
+                    <div class="wf-action-card__body">
+                      <div class="wf-action-card__config-stub">
+                        <!-- TODO eng: render per-action config form (reactive form fields) -->
+                        Inline configuration form for <strong>{{ a.name }}</strong> renders here.
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="wf-stop-after" [class.is-on]="wf().stopAfter">
+              <span class="ds-icon" aria-hidden="true">
+                {{ wf().stopAfter ? 'do_not_disturb_on' : 'stop_circle' }}
+              </span>
+              <div class="wf-stop-after__text">
+                <div class="wf-stop-after__title">Stop after this workflow</div>
+                <div class="wf-stop-after__sub">
+                  When matched, no further workflows on this trigger will run for the record.
+                </div>
+              </div>
+              <label class="ds-toggle wf-active-toggle" aria-label="Stop after this workflow">
+                <input type="checkbox" role="switch" class="ds-toggle__control"
+                       [checked]="wf().stopAfter"
+                       (change)="setStopAfter($any($event.target).checked)" />
+                <span class="ds-toggle__track"><span class="ds-toggle__thumb"></span></span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    @if (dirty()) {
+      <div class="wf-save-bar-wrap">
+        <div class="ds-save-bar" [class.ds-save-bar--error]="hasErrors()"
+             [attr.role]="hasErrors() ? 'alert' : 'status'" aria-live="polite">
+          <div class="ds-save-bar__message">
+            <span class="ds-save-bar__dot" aria-hidden="true"></span>
+            <span class="ds-save-bar__text">
+              {{ hasErrors() ? 'Required information missing' : 'You have unsaved changes' }}
+            </span>
+          </div>
+          <div class="ds-save-bar__actions">
+            <button class="ds-button ds-button--text" type="button" (click)="cancelChanges()">Cancel</button>
+            <button class="ds-button ds-button--outlined" type="button"
+                    [disabled]="hasErrors()" (click)="saveProgress()">Save Progress</button>
+            <button class="ds-button ds-button--filled" type="button"
+                    [disabled]="hasErrors()" (click)="saveAndExit()">Save and Exit</button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

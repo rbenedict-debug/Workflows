@@ -1,0 +1,448 @@
+@use '@onflo/design-system/tokens/scss' as ds;
+
+// Workflow Builder — realigned to Onflo DS v0.7.1.
+// DS atoms (input, textarea, select, autocomplete, toggle, menu, save-bar,
+// buttons, labels) carry their styling; this file is layout + a few bespoke
+// pieces (segmented control, trigger pill, action cards) on design tokens.
+
+:host { display: block; height: 100%; min-height: 0; }
+
+.wf-builder-main {
+  padding: 0;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.wf-builder {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+// ── Header ─────────────────────────────────────────────────────────────────
+.wf-builder-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border-subtle);
+
+  &__text { flex: 1 1 auto; min-width: 0; }
+
+  &__breadcrumb {
+    @include ds.type-body-small;
+    color: var(--color-text-secondary);
+  }
+
+  &__name {
+    @include ds.type-title-h3;
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: var(--color-text-primary);
+    padding: 2px 0;
+    border-bottom: 1px solid transparent;
+
+    &:hover { border-bottom-color: var(--color-border-input); }
+    &:focus { outline: none; border-bottom-color: var(--color-surface-brand-bold); }
+    &::placeholder { color: var(--color-text-placeholder); }
+  }
+}
+
+.wf-active-toggle { flex-shrink: 0; }
+
+// ── Scroll body ──────────────────────────────────────────────────────────────
+.wf-builder-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.wf-builder-body {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+// ── Section ────────────────────────────────────────────────────────────────
+.wf-section {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-default);
+  overflow: hidden;
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  &__head-spacer { flex: 1 1 auto; }
+
+  &__body {
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+
+  &__helper {
+    @include ds.type-body-small;
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+}
+
+// ── Fields ─────────────────────────────────────────────────────────────────
+.wf-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+
+  &__label {
+    @include ds.type-label-medium;
+    color: var(--color-text-primary);
+  }
+  &__required { color: var(--color-text-error); }
+  &__label-helper {
+    @include ds.type-body-small;
+    font-weight: 400;
+    color: var(--color-text-secondary);
+    margin-left: var(--spacing-xs);
+  }
+}
+
+.wf-field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+}
+
+// ── Tag autocomplete ─────────────────────────────────────────────────────────
+.wf-tag-input { position: relative; }
+.wf-tag-input .ds-autocomplete { position: relative; }
+
+.wf-tag-panel {
+  position: absolute;
+  top: calc(100% + var(--spacing-xs));
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: block;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.wf-tag-option { cursor: pointer; }
+
+.wf-tag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+}
+
+// ── Trigger pill ─────────────────────────────────────────────────────────────
+.wf-trigger-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-subtle);
+  width: fit-content;
+
+  &__icon { color: var(--color-icon-brand); }
+  &__label {
+    @include ds.type-label-medium;
+    color: var(--color-text-primary);
+  }
+}
+
+.wf-trigger-config-slot {
+  margin-top: var(--spacing-sm);
+  border: 1px dashed var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+
+  &__head {
+    h3 { @include ds.type-label-medium; margin: 0; color: var(--color-text-primary); }
+    span { @include ds.type-body-small; color: var(--color-text-secondary); }
+  }
+  &__body {
+    @include ds.type-body-small;
+    color: var(--color-text-secondary);
+    margin-top: var(--spacing-sm);
+  }
+}
+
+// ── Segmented control (ALL/ANY, AND/OR) — no DS equivalent ────────────────────
+.wf-segment {
+  display: inline-flex;
+  padding: 2px;
+  gap: 2px;
+  background: var(--color-surface-subtle);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+
+  &__btn {
+    border: none;
+    background: transparent;
+    border-radius: calc(var(--radius-md) - 2px);
+    padding: 4px var(--spacing-sm);
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    @include ds.type-label-small;
+    letter-spacing: 0.04em;
+
+    &:focus { outline: none; }
+    &:focus-visible { box-shadow: 0 0 0 3px var(--color-border-ada-focus-ring); }
+
+    &.is-selected {
+      background: var(--color-surface-default);
+      color: var(--color-text-brand);
+      box-shadow: var(--shadow-elevation-1);
+    }
+  }
+}
+
+// ── Condition groups ──────────────────────────────────────────────────────────
+.wf-condition-groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.wf-group-join {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  &__line { flex: 1 1 auto; height: 1px; background: var(--color-border-subtle); }
+}
+
+.wf-condition-group {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-subtle);
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  &__num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: var(--radius-full);
+    background: var(--color-surface-brand);
+    color: var(--color-text-brand);
+    @include ds.type-label-small;
+    flex-shrink: 0;
+  }
+
+  &__label {
+    @include ds.type-body-small;
+    color: var(--color-text-secondary);
+  }
+
+  &__body {
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  &__foot {
+    padding: 0 var(--spacing-md) var(--spacing-md);
+  }
+}
+
+.wf-condition-empty {
+  @include ds.type-body-small;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.wf-cond-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+.wf-cond-row__value { flex: 1 1 auto; }
+.wf-cond-row__filler { flex: 1 1 auto; }
+
+// Angular-driven ds-select dropdown.
+.wf-cond-select {
+  flex-shrink: 0;
+  &--field { width: 200px; }
+  &--operator { width: 156px; }
+
+  .ds-select__field-row { position: relative; }
+  .ds-select__field { cursor: pointer; }
+  .ds-select__dropdown {
+    display: block;
+    position: absolute;
+    top: calc(100% + var(--spacing-xs));
+    left: 0;
+    right: 0;
+    z-index: 40;
+  }
+}
+
+// ── Mini empty state (inline section hint) ────────────────────────────────────
+.wf-mini-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xl);
+  border: 1px dashed var(--color-border-subtle);
+  border-radius: var(--radius-md);
+
+  &__icon { color: var(--color-icon-disabled); font-size: 28px; }
+  &__title { @include ds.type-label-medium; color: var(--color-text-primary); }
+  &__hint {
+    @include ds.type-body-small;
+    color: var(--color-text-secondary);
+    max-width: 380px;
+  }
+  .ds-button { margin-top: var(--spacing-sm); }
+}
+
+// ── Action picker (ds-menu) ───────────────────────────────────────────────────
+.wf-action-picker-anchor { position: relative; }
+.wf-action-picker {
+  position: absolute;
+  top: calc(100% + var(--spacing-xs));
+  right: 0;
+  z-index: 40;
+  min-width: 240px;
+}
+
+// ── Action cards ──────────────────────────────────────────────────────────────
+.wf-action-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.wf-action-card {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-default);
+  overflow: hidden;
+
+  &.is-error { border-color: var(--color-border-error); }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    cursor: pointer;
+  }
+
+  &__sort {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+
+  &__index {
+    flex-shrink: 0;
+    @include ds.type-label-small;
+    color: var(--color-text-secondary);
+    font-variant-numeric: tabular-nums;
+    width: 16px;
+    text-align: center;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    background: var(--color-surface-brand);
+    color: var(--color-icon-brand);
+
+    &.is-error { background: var(--color-surface-error); color: var(--color-text-error); }
+  }
+
+  &__text { flex: 1 1 auto; min-width: 0; }
+  &__name { @include ds.type-label-medium; color: var(--color-text-primary); }
+  &__summary {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    @include ds.type-body-small;
+    color: var(--color-text-secondary);
+    &.is-error { color: var(--color-text-error); }
+  }
+
+  &__chevron {
+    transition: transform var(--motion-duration-short, 150ms) ease;
+    &.is-expanded { transform: rotate(180deg); }
+  }
+
+  &__body {
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--color-border-subtle);
+  }
+
+  &__config-stub {
+    @include ds.type-body-small;
+    color: var(--color-text-secondary);
+    padding: var(--spacing-md);
+    border: 1px dashed var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-subtle);
+  }
+}
+
+// ── Stop after ────────────────────────────────────────────────────────────────
+.wf-stop-after {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--color-icon-secondary);
+
+  &.is-on {
+    border-color: var(--color-border-brand);
+    background: var(--color-surface-brand);
+    color: var(--color-icon-brand);
+  }
+
+  &__text { flex: 1 1 auto; }
+  &__title { @include ds.type-label-medium; color: var(--color-text-primary); }
+  &__sub { @include ds.type-body-small; color: var(--color-text-secondary); }
+}
+
+// ── Save bar ──────────────────────────────────────────────────────────────────
+.wf-save-bar-wrap {
+  flex-shrink: 0;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-top: 1px solid var(--color-border-subtle);
+  background: var(--color-surface-default);
+}

@@ -41,6 +41,13 @@ export class App implements AfterViewInit, OnDestroy {
   private _syncNavFromUrl(url: string): void {
     const segment = url.split('/')[1]?.split('?')[0];
     const valid: NavSection[] = ['tickets', 'assets', 'users', 'analytics', 'settings'];
+    // Workflows live under Settings → Workflows, so keep that section active.
+    if (segment === 'workflows') {
+      this.activeNav = 'settings';
+      this.settingsExpanded['workflows'] = true;
+      this.settingsNavItem = url.includes('category=assets') ? 'workflows-assets' : 'workflows-tickets';
+      return;
+    }
     if (!segment) {
       this.activeNav = 'tickets';
     } else {
@@ -60,6 +67,11 @@ export class App implements AfterViewInit, OnDestroy {
   setNav(section: NavSection): void {
     this.subNavOpen = true;
     this.router.navigate([section]);
+  }
+
+  goWorkflows(category: 'tickets' | 'assets'): void {
+    this.subNavOpen = true;
+    this.router.navigate(['/workflows'], { queryParams: { category } });
   }
 
   get activeNavLabel(): string {

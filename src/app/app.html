@@ -345,10 +345,10 @@
                   </button>
                   <div class="ds-subnav-header__children">
                     @if (!filter || filter.has('workflows-tickets')) {
-                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'workflows-tickets'" (click)="settingsNavItem = 'workflows-tickets'">Tickets</button>
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'workflows-tickets'" (click)="settingsNavItem = 'workflows-tickets'; goWorkflows('tickets')">Tickets</button>
                     }
                     @if (!filter || filter.has('workflows-assets')) {
-                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'workflows-assets'" (click)="settingsNavItem = 'workflows-assets'">Assets</button>
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'workflows-assets'" (click)="settingsNavItem = 'workflows-assets'; goWorkflows('assets')">Assets</button>
                     }
                     @if (!filter || filter.has('lookup-tables')) {
                       <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'lookup-tables'" (click)="settingsNavItem = 'lookup-tables'">Lookup Tables</button>

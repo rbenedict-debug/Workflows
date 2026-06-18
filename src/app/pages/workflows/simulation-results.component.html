@@ -1,0 +1,310 @@
+<div class="ds-page-content__heading wf-sim-heading">
+  <h1 class="ds-page-content__title ds-sr-only">Simulation results</h1>
+</div>
+
+<div class="ds-page-content__main wf-sim-main">
+  <div class="wf-sim">
+
+    <!-- Page header -->
+    <header class="wf-sim-header">
+      <div class="wf-sim-header__crumbs">
+        Workflows · Tickets · Ticket Created · Simulation results
+      </div>
+      <div class="wf-sim-header__row">
+        <h2 class="wf-sim-header__title">Simulation results</h2>
+        <div class="wf-sim-header__meta">
+          <span class="wf-mono-token">{{ recordId() }}</span>
+          <span class="wf-sim-header__sep">·</span>
+          <span class="wf-sim-header__duration">{{ durationMs() }} ms</span>
+        </div>
+        <div class="wf-sim-header__spacer"></div>
+        <button class="ds-button ds-button--outlined ds-button--sm ds-button--leading-icon"
+                type="button" (click)="runAgain()">
+          <span class="ds-icon" aria-hidden="true">replay</span>
+          Run again
+        </button>
+        <button class="ds-button ds-button--text ds-button--sm" type="button" (click)="close()">Close</button>
+      </div>
+    </header>
+
+    <!-- Scenario picker -->
+    <div class="ds-inner-page-tabs wf-sim-scenarios" role="tablist" aria-label="Scenario">
+      @for (s of scenarios; track s.id; let i = $index) {
+        <button type="button"
+                class="ds-inner-page-tabs__tab"
+                role="tab"
+                [class.is-selected]="scenarioIdx() === i"
+                [attr.aria-selected]="scenarioIdx() === i"
+                [attr.tabindex]="scenarioIdx() === i ? 0 : -1"
+                (click)="pickScenario(i)">
+          {{ s.label }}
+        </button>
+      }
+    </div>
+
+    <!-- Simulation banner -->
+    <div class="ds-alert ds-alert--info wf-sim-banner" role="note">
+      <div class="ds-alert__header">
+        <span class="ds-icon ds-alert__icon" aria-hidden="true">science</span>
+        <div class="ds-alert__content">
+          <div class="ds-alert__text">
+            <p class="ds-alert__message">
+              <strong>Simulation only.</strong>
+              No side effects occurred — actions are previewed, not executed.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metrics -->
+    <div class="wf-sim-metrics">
+      <div class="ds-metric-card">
+        <div class="ds-metric-card__header">
+          <span class="ds-metric-card__label">Evaluated</span>
+        </div>
+        <div class="ds-metric-card__value">{{ metrics().evaluated }}</div>
+        <div class="ds-metric-card__trend">
+          <span class="ds-metric-card__trend-label">
+            {{ metrics().notEval ? metrics().notEval + ' not evaluated' : 'workflows checked' }}
+          </span>
+        </div>
+      </div>
+      <div class="ds-metric-card ds-metric-card--brand">
+        <div class="ds-metric-card__header">
+          <span class="ds-metric-card__label">Matched</span>
+          <span class="ds-icon ds-icon--sm ds-icon--filled" aria-hidden="true">check_circle</span>
+        </div>
+        <div class="ds-metric-card__value">{{ metrics().matched }}</div>
+        <div class="ds-metric-card__trend">
+          <span class="ds-metric-card__trend-label">
+            {{ metrics().matched > 0 ? 'actions ready to run' : 'no conditions met' }}
+          </span>
+        </div>
+      </div>
+      <div class="ds-metric-card">
+        <div class="ds-metric-card__header">
+          <span class="ds-metric-card__label">Skipped</span>
+        </div>
+        <div class="ds-metric-card__value">{{ metrics().skipped }}</div>
+        <div class="ds-metric-card__trend">
+          <span class="ds-metric-card__trend-label">
+            {{ metrics().skipped > 0 ? 'conditions did not match' : 'none' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    @if (scenario().empty) {
+      <div class="ds-empty-state ds-empty-state--lg wf-empty">
+        <div class="ds-empty-state__graphic" aria-hidden="true">
+          <svg viewBox="0 0 98 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10.085 31.25C12.3158 31.25 14.2877 32.0431 16.002 33.627C15.9403 34.4958 15.9092 35.3768 15.9092 36.2695C15.9093 42.3347 17.3358 47.8519 20.1709 52.7402V87.5C20.1709 90.9375 19.183 93.8802 17.208 96.3281C15.233 98.776 12.8584 100 10.085 100C7.31173 99.9999 4.93781 98.7758 2.96289 96.3281C0.987877 93.8802 1.0228e-05 90.9375 0 87.5V43.75C0 40.3125 0.987867 37.3698 2.96289 34.9219C4.93782 32.4741 7.31171 31.2501 10.085 31.25ZM30.2559 63.5752C35.6318 67.2693 41.8436 69.1289 48.7695 69.1289C49.3251 69.1289 49.8771 69.1137 50.4258 69.0869V87.5C50.4258 90.9374 49.4388 93.8802 47.4639 96.3281C45.4888 98.776 43.1143 100 40.3408 100C37.5675 100 35.1937 98.7758 33.2188 96.3281C31.2437 93.8802 30.2559 90.9375 30.2559 87.5V63.5752ZM80.6816 80.709V87.5C80.6816 90.9374 79.6947 93.8802 77.7197 96.3281C75.7447 98.776 73.3701 100 70.5967 100C67.8232 100 65.4487 98.776 63.4736 96.3281C61.4987 93.8802 60.5117 90.9374 60.5117 87.5V66.8896C62.0032 66.2906 63.426 65.5962 64.7744 64.8008L80.6816 80.709ZM40.3408 0C43.0242 0 45.3316 1.14788 47.2676 3.43945C41.1397 3.68239 35.5952 5.42309 30.7227 8.64648C31.1952 6.8081 32.0265 5.14963 33.2188 3.67188C35.1937 1.22416 37.5675 4.37684e-05 40.3408 0Z" fill="currentColor"/>
+            <ellipse cx="48.8636" cy="36.3636" rx="21.5909" ry="21.5909" style="fill: var(--color-surface-subtle)"/>
+            <path d="M48.769 64.5833C40.8555 64.5833 34.158 61.8427 28.6767 56.3613C23.1953 50.8799 20.4546 44.1825 20.4546 36.269C20.4546 28.3555 23.1953 21.658 28.6767 16.1766C34.158 10.6953 40.8555 7.95459 48.769 7.95459C56.6825 7.95459 63.3799 10.6953 68.8613 16.1766C74.3427 21.658 77.0834 28.3555 77.0834 36.269C77.0834 39.4634 76.5752 42.4763 75.5588 45.3078C74.5424 48.1392 73.1629 50.644 71.4205 52.822L95.8145 77.2159C96.6131 78.0145 97.0124 79.0309 97.0124 80.2652C97.0124 81.4994 96.6131 82.5158 95.8145 83.3144C95.0158 84.113 93.9994 84.5123 92.7652 84.5123C91.531 84.5123 90.5146 84.113 89.716 83.3144L65.322 58.9205C63.144 60.6629 60.6393 62.0423 57.8078 63.0587C54.9764 64.0751 51.9634 64.5833 48.769 64.5833ZM48.769 55.8712C54.2141 55.8712 58.8424 53.9655 62.6539 50.1539C66.4655 46.3423 68.3713 41.714 68.3713 36.269C68.3713 30.8239 66.4655 26.1956 62.6539 22.384C58.8424 18.5725 54.2141 16.6667 48.769 16.6667C43.3239 16.6667 38.6956 18.5725 34.884 22.384C31.0725 26.1956 29.1667 30.8239 29.1667 36.269C29.1667 41.714 31.0725 46.3423 34.884 50.1539C38.6956 53.9655 43.3239 55.8712 48.769 55.8712Z" fill="currentColor"/>
+            <path d="M52.734 29.218C52.734 28.0607 52.3463 27.1322 51.5709 26.4324C50.7955 25.7326 49.7684 25.3828 48.4897 25.3828C47.7007 25.3828 46.9866 25.551 46.3472 25.8874C45.7079 26.2238 45.1569 26.715 44.6944 27.3609C44.2591 27.9799 43.6674 28.3365 42.9192 28.4307C42.171 28.5249 41.5249 28.3298 40.9807 27.8454C40.5998 27.4955 40.389 27.0649 40.3482 26.5535C40.3074 26.0421 40.4366 25.5577 40.7359 25.1002C41.6065 23.8083 42.7151 22.8057 44.0619 22.0925C45.4086 21.3793 46.8845 21.0227 48.4897 21.0227C51.1288 21.0227 53.2713 21.7628 54.9173 23.2431C56.5633 24.7234 57.3863 26.6612 57.3863 29.0565C57.3863 30.2676 57.1278 31.3576 56.6109 32.3265C56.094 33.2954 55.1417 34.4393 53.7542 35.758C52.7476 36.7 52.0674 37.4334 51.7137 37.9583C51.36 38.4831 51.1288 39.0819 51.0199 39.7548C50.9111 40.4007 50.6322 40.939 50.1833 41.3696C49.7344 41.8002 49.1971 42.0155 48.5714 42.0155C47.9456 42.0155 47.4083 41.8069 46.9594 41.3898C46.5105 40.9726 46.286 40.4545 46.286 39.8355C46.286 38.7859 46.5173 37.8237 46.9798 36.949C47.4423 36.0743 48.2177 35.1525 49.3059 34.1836C50.6935 32.9725 51.6117 32.0372 52.0606 31.3778C52.5095 30.7184 52.734 29.9985 52.734 29.218ZM48.4897 51.7045C47.5919 51.7045 46.8233 51.3883 46.184 50.7558C45.5446 50.1233 45.2249 49.363 45.2249 48.4748C45.2249 47.5867 45.5446 46.8264 46.184 46.1939C46.8233 45.5614 47.5919 45.2452 48.4897 45.2452C49.3875 45.2452 50.1561 45.5614 50.7955 46.1939C51.4348 46.8264 51.7545 47.5867 51.7545 48.4748C51.7545 49.363 51.4348 50.1233 50.7955 50.7558C50.1561 51.3883 49.3875 51.7045 48.4897 51.7045Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="ds-empty-state__body">
+          <p class="ds-empty-state__heading">No workflows on this trigger</p>
+          <p class="ds-empty-state__description">Tickets › Ticket Created has no workflows configured. Add one to begin scoping behavior.</p>
+        </div>
+      </div>
+    } @else {
+      <div class="wf-sim-timeline">
+        @for (c of scenario().cards; track $index; let i = $index) {
+          @if (isTermination(c)) {
+            <div class="wf-sim-termination">
+              <div class="wf-sim-termination__line"></div>
+              <div class="wf-sim-termination__pill">
+                <span class="ds-icon ds-icon--sm" aria-hidden="true">stop_circle</span>
+                Processing stopped — {{ c.remaining }} workflow{{ c.remaining === 1 ? '' : 's' }} below not evaluated
+              </div>
+              <div class="wf-sim-termination__line"></div>
+            </div>
+          } @else if (isCard(c)) {
+            <article class="wf-sim-card"
+                     [class.is-matched]="c.wf.status === 'matched'"
+                     [class.is-skipped]="c.wf.status === 'skipped'"
+                     [class.is-not-evaluated]="c.wf.status === 'not-evaluated'">
+              <button type="button" class="wf-sim-card__head"
+                      [attr.aria-expanded]="isCardExpanded(c.wf.id)"
+                      [disabled]="c.wf.status === 'not-evaluated' && !c.wf.notEvaluatedReason"
+                      (click)="toggleCard(c.wf.id)">
+                <span class="wf-sim-card__num">{{ pad2(position(i)) }}</span>
+                <div class="wf-sim-card__title-block">
+                  <div class="wf-sim-card__name">{{ c.wf.name }}</div>
+                  @if (c.wf.stopAfter && c.wf.status === 'matched') {
+                    <div class="wf-sim-card__stop">
+                      <span class="ds-icon ds-icon--sm ds-icon--filled" aria-hidden="true">stop_circle</span>
+                      Stop after this workflow
+                    </div>
+                  }
+                </div>
+                <span class="wf-status-badge" [attr.data-status]="c.wf.status">
+                  <span class="ds-icon ds-icon--sm" aria-hidden="true">
+                    @switch (c.wf.status) {
+                      @case ('matched') { check_circle }
+                      @case ('skipped') { remove_circle_outline }
+                      @case ('not-evaluated') { do_not_disturb_on }
+                    }
+                  </span>
+                  @switch (c.wf.status) {
+                    @case ('matched') { Matched }
+                    @case ('skipped') { Skipped }
+                    @case ('not-evaluated') { Not evaluated }
+                  }
+                </span>
+                <span class="ds-icon wf-sim-card__chevron"
+                      [class.is-expanded]="isCardExpanded(c.wf.id)"
+                      aria-hidden="true">expand_more</span>
+              </button>
+
+              @if (isCardExpanded(c.wf.id)) {
+                <div class="wf-sim-card__body">
+                  @if (c.wf.notEvaluatedReason) {
+                    <div class="wf-sim-card__not-eval">
+                      <span class="wf-sim-card__not-eval-pref">If evaluated, this workflow would </span>
+                      <strong>{{ c.wf.notEvaluatedReason.outcome }}</strong>
+                      <span class="wf-sim-card__not-eval-pref"> because </span>
+                      {{ c.wf.notEvaluatedReason.because }}
+                    </div>
+                  }
+
+                  @if (c.wf.conditions && c.wf.conditions.length > 0) {
+                    <section class="wf-sim-card__section">
+                      <div class="wf-sim-card__section-label">
+                        Conditions · {{ c.wf.conditionsSummary }}
+                        @if (c.wf.conditionGroupMode) {
+                          <span class="wf-sim-card__cond-mode">{{ c.wf.conditionGroupMode }}</span>
+                        }
+                      </div>
+                      <div class="wf-sim-cond-list">
+                        @for (cnd of c.wf.conditions; track $index) {
+                          <div class="wf-cond-rule" [class.is-fail]="!cnd.pass">
+                            <span class="ds-icon ds-icon--sm" aria-hidden="true"
+                                  [class.is-pass]="cnd.pass" [class.is-fail]="!cnd.pass">
+                              {{ cnd.pass ? 'check_circle' : 'cancel' }}
+                            </span>
+                            <span class="wf-cond-rule__field">{{ cnd.field }}</span>
+                            <span class="wf-cond-rule__op">{{ cnd.operator }}</span>
+                            <span class="wf-mono-token">{{ cnd.value }}</span>
+                            @if (cnd.actual !== undefined) {
+                              <span class="wf-cond-rule__actual" [class.is-fail]="!cnd.pass">
+                                <span class="wf-cond-rule__actual-label">actual:</span>
+                                <span class="wf-cond-rule__actual-value">{{ cnd.actual }}</span>
+                              </span>
+                            }
+                          </div>
+                        }
+                      </div>
+                    </section>
+                  }
+
+                  @if (c.wf.actions && c.wf.actions.length > 0) {
+                    <section class="wf-sim-card__section">
+                      <div class="wf-sim-card__section-label">
+                        {{ c.wf.actions.length }} action{{ c.wf.actions.length === 1 ? '' : 's' }} would execute
+                      </div>
+                      <div class="wf-sim-actions">
+                        @for (a of c.wf.actions; track $index) {
+                          @if (asDiff(a); as d) {
+                            <div class="wf-sim-action">
+                              <header>
+                                <span class="ds-icon ds-icon--sm" aria-hidden="true">{{ d.icon }}</span>
+                                <span>{{ d.title }}</span>
+                              </header>
+                              <div class="wf-sim-action__diff">
+                                <span class="wf-sim-action__before">{{ d.before }}</span>
+                                <span class="ds-icon ds-icon--sm" aria-hidden="true">arrow_forward</span>
+                                <span class="wf-sim-action__after">{{ d.after }}</span>
+                              </div>
+                              @if (d.wildcardResolved) {
+                                <div class="wf-sim-action__resolved">
+                                  Resolved from <code>{{ d.wildcardResolved }}</code>
+                                </div>
+                              }
+                            </div>
+                          }
+                          @if (asComment(a); as cmt) {
+                            <div class="wf-sim-action">
+                              <header>
+                                <span class="ds-icon ds-icon--sm" aria-hidden="true">chat</span>
+                                <span>{{ cmt.visibility === 'internal' ? 'Internal comment' : 'Public comment' }}</span>
+                              </header>
+                              <p class="wf-sim-action__body-text">{{ cmt.body }}</p>
+                            </div>
+                          }
+                          @if (asEmail(a); as em) {
+                            <div class="wf-sim-action wf-sim-action--email">
+                              <header>
+                                <span class="ds-icon ds-icon--sm" aria-hidden="true">send</span>
+                                <span>Send email</span>
+                              </header>
+                              <div class="wf-sim-email">
+                                <div class="wf-sim-email__row">
+                                  <span class="wf-sim-email__k">From</span>
+                                  <span class="wf-sim-email__v wf-mono-token">{{ em.from }}</span>
+                                </div>
+                                <div class="wf-sim-email__row">
+                                  <span class="wf-sim-email__k">To</span>
+                                  <span class="wf-sim-email__v wf-mono-token">{{ em.to }}</span>
+                                </div>
+                                <div class="wf-sim-email__row">
+                                  <span class="wf-sim-email__k">Subject</span>
+                                  <span class="wf-sim-email__v wf-sim-email__subj">{{ em.subject }}</span>
+                                </div>
+                                <pre class="wf-sim-email__body">{{ em.body }}</pre>
+                              </div>
+                            </div>
+                          }
+                          @if (asFailing(a); as f) {
+                            <div class="wf-sim-action wf-sim-action--failing">
+                              <header>
+                                <span class="ds-icon ds-icon--sm ds-icon--filled" aria-hidden="true">warning</span>
+                                <span>{{ f.title }}</span>
+                                <span class="wf-sim-action__target">{{ f.target }}</span>
+                              </header>
+                              <p class="wf-sim-action__failing-reason">
+                                <strong>Would fail:</strong> {{ f.reason }}
+                              </p>
+                            </div>
+                          }
+                          @if (asCreateTicket(a); as ct) {
+                            <div class="wf-sim-action">
+                              <header>
+                                <span class="ds-icon ds-icon--sm" aria-hidden="true">add_box</span>
+                                <span>Create ticket</span>
+                              </header>
+                              <div class="wf-sim-create-ticket">
+                                <div class="wf-sim-create-ticket__subj">{{ ct.ticket.subject }}</div>
+                                <div class="wf-sim-create-ticket__meta">
+                                  {{ ct.ticket.type }} · {{ ct.ticket.topic }} · Priority {{ ct.ticket.priority }}
+                                </div>
+                                <p class="wf-sim-action__body-text">{{ ct.ticket.description }}</p>
+                              </div>
+                            </div>
+                          }
+                        }
+                      </div>
+                    </section>
+                  }
+
+                  @if (c.wf.status === 'skipped' && (!c.wf.actions || c.wf.actions.length === 0)) {
+                    <em class="wf-sim-card__none">No actions would run. Conditions did not match.</em>
+                  }
+                </div>
+              }
+            </article>
+          }
+        }
+      </div>
+
+      <div class="wf-sim-foot">
+        <span class="ds-icon ds-icon--sm" aria-hidden="true">info</span>
+        <span>{{ scenario().hint }}</span>
+      </div>
+    }
+  </div>
+</div>

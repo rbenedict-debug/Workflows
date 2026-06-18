@@ -1,0 +1,398 @@
+@use '@onflo/design-system/tokens/scss' as ds;
+
+// Workflow List — realigned to Onflo DS v0.7.1.
+// DS components carry their own styling; this file is layout + a few bespoke
+// pieces (rail, cards, clause rows) built strictly on design tokens.
+
+:host { display: block; height: 100%; min-height: 0; }
+
+.wf-list-main {
+  // Neutralise the default page card — the rail and pane provide their own chrome.
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.wf-list {
+  display: flex;
+  gap: var(--spacing-md);
+  height: 100%;
+  min-height: 0;
+}
+
+// ── Left rail ────────────────────────────────────────────────────────────────
+.wf-list__rail {
+  flex-shrink: 0;
+  width: 244px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  min-height: 0;
+}
+
+.wf-rail-panel {
+  background: var(--color-surface-default);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-elevation-1);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+
+  &--scroll { flex: 1 1 auto; }
+}
+
+.wf-rail-panel__title {
+  @include ds.type-label-small;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-secondary);
+  padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
+}
+
+.wf-rail-panel__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 var(--spacing-sm) var(--spacing-sm);
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.wf-rail-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  color: var(--color-text-primary);
+  @include ds.type-body-small;
+
+  &:hover { background: var(--overlay-hover); }
+  &:focus { outline: none; }
+  &:focus-visible { box-shadow: 0 0 0 3px var(--color-border-ada-focus-ring); }
+
+  &.is-selected {
+    background: var(--color-surface-brand);
+    color: var(--color-text-brand);
+    font-weight: var(--ref-typescale-body-small-weight-prominent);
+  }
+
+  &__icon { color: var(--color-icon-secondary); }
+  &.is-selected &__icon { color: var(--color-text-brand); }
+
+  &__label { flex: 1 1 auto; min-width: 0; }
+  &__count { flex-shrink: 0; }
+}
+
+// ── List pane ────────────────────────────────────────────────────────────────
+.wf-list__pane {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface-default);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-elevation-1);
+  overflow: hidden;
+}
+
+.wf-list-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border-subtle);
+  flex-wrap: wrap;
+
+  &__breadcrumb {
+    @include ds.type-body-small;
+    color: var(--color-text-secondary);
+  }
+
+  &__search {
+    margin-left: auto;
+    width: 280px;
+    max-width: 100%;
+  }
+}
+
+.wf-list-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border-subtle);
+
+  &__count {
+    @include ds.type-label-medium;
+    color: var(--color-text-secondary);
+  }
+
+  &__hint {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    @include ds.type-body-small;
+    color: var(--color-text-secondary);
+  }
+
+  &__spacer { flex: 1 1 auto; }
+}
+
+.wf-collapse-toggle .ds-toggle__label {
+  @include ds.type-body-small;
+  color: var(--color-text-secondary);
+}
+
+// ── Stream ───────────────────────────────────────────────────────────────────
+.wf-list-stream {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--spacing-lg);
+}
+
+.wf-empty {
+  margin: var(--spacing-xl) auto;
+}
+
+.wf-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+// ── Workflow card (bespoke layout, DS atoms inside) ───────────────────────────
+.wf-card {
+  display: flex;
+  gap: var(--spacing-sm);
+  background: var(--color-surface-default);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-elevation-1);
+  padding: var(--spacing-md);
+  transition: box-shadow var(--motion-duration-short, 150ms) ease;
+
+  &:hover { box-shadow: var(--shadow-elevation-2); }
+
+  &.is-disabled {
+    background: var(--color-surface-subtle);
+    .wf-card__name, .wf-card__desc { color: var(--color-text-secondary); }
+  }
+
+  &__rail {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    width: 32px;
+    padding-top: 2px;
+  }
+
+  &__number {
+    @include ds.type-label-small;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-secondary);
+  }
+
+  &__drag {
+    color: var(--color-icon-disabled);
+    cursor: grab;
+    &.is-disabled { opacity: 0.4; cursor: not-allowed; }
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  &__head { min-width: 0; }
+
+  &__title-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+
+  &__name {
+    @include ds.type-title-h4;
+    margin: 0;
+    color: var(--color-text-primary);
+  }
+
+  &__desc {
+    @include ds.type-body-small;
+    color: var(--color-text-secondary);
+    margin: var(--spacing-xs) 0 0;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+
+  &__detail {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--color-border-subtle);
+  }
+}
+
+// ── Clause rows (WHEN / AND / THEN / STOP) ────────────────────────────────────
+.wf-clause {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  @include ds.type-body-small;
+  color: var(--color-text-primary);
+
+  &.is-indented { padding-left: var(--spacing-xl); }
+  &.is-stop { color: var(--color-text-secondary); }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 20px;
+    display: inline-flex;
+    justify-content: center;
+    color: var(--color-icon-secondary);
+  }
+
+  &__kind {
+    flex-shrink: 0;
+    width: 44px;
+    @include ds.type-label-small;
+    letter-spacing: 0.06em;
+    color: var(--color-text-secondary);
+  }
+
+  &__operator { color: var(--color-text-secondary); }
+  &__value { font-weight: var(--ref-typescale-body-small-weight-prominent); }
+  &__target { font-weight: var(--ref-typescale-body-small-weight-prominent); }
+  &__field { flex-shrink: 0; }
+}
+
+// Menu anchor — DS menu panel positioned under the trigger.
+.wf-menu-anchor { position: relative; }
+.wf-card-menu {
+  position: absolute;
+  top: calc(100% + var(--spacing-xs));
+  right: 0;
+  z-index: 30;
+  min-width: 232px;
+}
+
+// ── Footer / pagination ───────────────────────────────────────────────────────
+.wf-list-footer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-top: 1px solid var(--color-border-subtle);
+  @include ds.type-body-small;
+  color: var(--color-text-secondary);
+
+  &__group { display: flex; align-items: center; gap: var(--spacing-sm); }
+  &__divider { width: 1px; height: 20px; background: var(--color-border-subtle); }
+  &__range { margin-left: auto; }
+  &__nav { display: flex; align-items: center; gap: var(--spacing-sm); }
+  &__pageno { font-variant-numeric: tabular-nums; }
+}
+
+// ── Test run dialog ────────────────────────────────────────────────────────────
+.wf-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  background: var(--color-surface-scrim);
+}
+
+.wf-test-dialog {
+  width: 460px;
+  max-width: 100%;
+}
+
+.wf-test-sub {
+  @include ds.type-body-small;
+  color: var(--color-text-secondary);
+  margin: calc(var(--spacing-xs) * -1) 0 var(--spacing-sm);
+}
+
+.wf-test-field { margin-top: var(--spacing-md); }
+
+.wf-test-hint {
+  display: block;
+  @include ds.type-body-small;
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+.wf-test-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-success);
+  color: var(--color-text-success);
+  @include ds.type-label-medium;
+}
+
+.wf-test-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.wf-test-stat {
+  text-align: center;
+  padding: var(--spacing-md) var(--spacing-sm);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+
+  &__value {
+    @include ds.type-title-h3;
+    color: var(--color-text-primary);
+  }
+  &__label {
+    @include ds.type-label-small;
+    color: var(--color-text-secondary);
+    margin-top: var(--spacing-xs);
+  }
+}
+
+.wf-test-record-line {
+  @include ds.type-body-small;
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-md);
+
+  code {
+    font-family: var(--ref-typeface-mono, monospace);
+    color: var(--color-text-primary);
+  }
+}

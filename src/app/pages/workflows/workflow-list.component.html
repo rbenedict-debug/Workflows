@@ -1,0 +1,408 @@
+<div class="ds-page-content__heading ds-page-content__heading--row">
+  <h1 class="ds-page-content__title">Workflows</h1>
+</div>
+
+<div class="ds-page-content__main wf-list-main">
+  <div class="wf-list">
+
+    <!-- Left rail -->
+    <aside class="wf-list__rail">
+      <section class="wf-rail-panel">
+        <div class="wf-rail-panel__title">Category</div>
+        <div class="wf-rail-panel__body">
+          @for (c of categories; track c.id) {
+            <button type="button"
+                    class="wf-rail-row"
+                    [class.is-selected]="categoryId() === c.id"
+                    [attr.aria-pressed]="categoryId() === c.id"
+                    (click)="pickCategory(c.id)">
+              <span class="ds-icon ds-icon--sm wf-rail-row__icon" aria-hidden="true">{{ c.icon }}</span>
+              <span class="wf-rail-row__label">{{ c.label }}</span>
+            </button>
+          }
+        </div>
+      </section>
+
+      <section class="wf-rail-panel wf-rail-panel--scroll">
+        <div class="wf-rail-panel__title">Triggers</div>
+        <div class="wf-rail-panel__body">
+          @for (t of triggers(); track t.id) {
+            <button type="button"
+                    class="wf-rail-row"
+                    [class.is-selected]="triggerId() === t.id"
+                    [attr.aria-pressed]="triggerId() === t.id"
+                    (click)="pickTrigger(t.id)">
+              <span class="wf-rail-row__label">{{ t.label }}</span>
+              <span class="ds-label ds-label--grey ds-label--xs ds-label--pill wf-rail-row__count">{{ countFor(categoryId(), t.id) }}</span>
+            </button>
+          }
+        </div>
+      </section>
+    </aside>
+
+    <!-- List pane -->
+    <section class="wf-list__pane">
+
+      <!-- Header -->
+      <header class="wf-list-header">
+        <button class="ds-button ds-button--filled ds-button--sm ds-button--leading-icon"
+                type="button"
+                (click)="openBuilder({ new: 1, category: categoryId(), trigger: trigger().id })">
+          <span class="ds-icon" aria-hidden="true">add</span>
+          Add Workflow
+        </button>
+        <button class="ds-button ds-button--outlined ds-button--sm ds-button--leading-icon"
+                type="button"
+                (click)="openTestRun()">
+          <span class="ds-icon" aria-hidden="true">play_arrow</span>
+          Test Run Trigger
+        </button>
+        <span class="wf-list-header__breadcrumb">
+          {{ category().label }} › {{ trigger().label }}
+        </span>
+        <div class="ds-input ds-search wf-list-header__search" role="search">
+          <div class="ds-input__field">
+            <span class="ds-icon ds-icon--sm ds-input__icon" aria-hidden="true">search</span>
+            <input class="ds-input__control"
+                   type="search"
+                   placeholder="Search by name or tag"
+                   aria-label="Search workflows"
+                   [value]="search()"
+                   (input)="onSearchChange($any($event.target).value)" />
+            @if (search()) {
+              <button class="ds-input__action" type="button" aria-label="Clear search"
+                      (click)="onSearchChange('')">
+                <span class="ds-icon ds-icon--sm" aria-hidden="true">close</span>
+              </button>
+            }
+          </div>
+        </div>
+      </header>
+
+      <!-- Toolbar -->
+      <div class="wf-list-toolbar">
+        <span class="wf-list-toolbar__count">
+          @if (filtered().length === allWorkflows().length) {
+            {{ filtered().length }} workflow{{ filtered().length === 1 ? '' : 's' }}
+          } @else {
+            {{ filtered().length }} of {{ allWorkflows().length }} workflow{{ allWorkflows().length === 1 ? '' : 's' }}
+          }
+        </span>
+
+        @if (tagFilter()) {
+          <span class="ds-tag ds-tag--sm">
+            <span class="ds-tag__label">Tag: {{ tagFilter() }}</span>
+            <button class="ds-tag__remove" type="button" aria-label="Clear tag filter" (click)="clearTagFilter()">
+              <span class="ds-icon ds-icon--xs" aria-hidden="true">close</span>
+            </button>
+          </span>
+        }
+
+        @if (searchActive()) {
+          <span class="wf-list-toolbar__hint">
+            <span class="ds-icon ds-icon--sm" aria-hidden="true">do_not_disturb_on</span>
+            Drag-and-drop disabled during search
+          </span>
+        }
+
+        <div class="wf-list-toolbar__spacer"></div>
+
+        <label class="ds-toggle wf-collapse-toggle">
+          <input type="checkbox" role="switch" class="ds-toggle__control"
+                 [checked]="collapseAll()"
+                 (change)="toggleCollapseAll($any($event.target).checked)"
+                 aria-label="Collapse all workflows" />
+          <span class="ds-toggle__track"><span class="ds-toggle__thumb"></span></span>
+          <span class="ds-toggle__label">Collapse all</span>
+        </label>
+      </div>
+
+      <!-- Stream -->
+      <div class="wf-list-stream">
+        @if (visible().length === 0) {
+          <div class="ds-empty-state ds-empty-state--lg wf-empty">
+            <div class="ds-empty-state__graphic" aria-hidden="true">
+              <svg viewBox="0 0 98 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10.085 31.25C12.3158 31.25 14.2877 32.0431 16.002 33.627C15.9403 34.4958 15.9092 35.3768 15.9092 36.2695C15.9093 42.3347 17.3358 47.8519 20.1709 52.7402V87.5C20.1709 90.9375 19.183 93.8802 17.208 96.3281C15.233 98.776 12.8584 100 10.085 100C7.31173 99.9999 4.93781 98.7758 2.96289 96.3281C0.987877 93.8802 1.0228e-05 90.9375 0 87.5V43.75C0 40.3125 0.987867 37.3698 2.96289 34.9219C4.93782 32.4741 7.31171 31.2501 10.085 31.25ZM30.2559 63.5752C35.6318 67.2693 41.8436 69.1289 48.7695 69.1289C49.3251 69.1289 49.8771 69.1137 50.4258 69.0869V87.5C50.4258 90.9374 49.4388 93.8802 47.4639 96.3281C45.4888 98.776 43.1143 100 40.3408 100C37.5675 100 35.1937 98.7758 33.2188 96.3281C31.2437 93.8802 30.2559 90.9375 30.2559 87.5V63.5752ZM80.6816 80.709V87.5C80.6816 90.9374 79.6947 93.8802 77.7197 96.3281C75.7447 98.776 73.3701 100 70.5967 100C67.8232 100 65.4487 98.776 63.4736 96.3281C61.4987 93.8802 60.5117 90.9374 60.5117 87.5V66.8896C62.0032 66.2906 63.426 65.5962 64.7744 64.8008L80.6816 80.709ZM40.3408 0C43.0242 0 45.3316 1.14788 47.2676 3.43945C41.1397 3.68239 35.5952 5.42309 30.7227 8.64648C31.1952 6.8081 32.0265 5.14963 33.2188 3.67188C35.1937 1.22416 37.5675 4.37684e-05 40.3408 0Z" fill="currentColor"/>
+                <ellipse cx="48.8636" cy="36.3636" rx="21.5909" ry="21.5909" style="fill: var(--color-surface-subtle)"/>
+                <path d="M48.769 64.5833C40.8555 64.5833 34.158 61.8427 28.6767 56.3613C23.1953 50.8799 20.4546 44.1825 20.4546 36.269C20.4546 28.3555 23.1953 21.658 28.6767 16.1766C34.158 10.6953 40.8555 7.95459 48.769 7.95459C56.6825 7.95459 63.3799 10.6953 68.8613 16.1766C74.3427 21.658 77.0834 28.3555 77.0834 36.269C77.0834 39.4634 76.5752 42.4763 75.5588 45.3078C74.5424 48.1392 73.1629 50.644 71.4205 52.822L95.8145 77.2159C96.6131 78.0145 97.0124 79.0309 97.0124 80.2652C97.0124 81.4994 96.6131 82.5158 95.8145 83.3144C95.0158 84.113 93.9994 84.5123 92.7652 84.5123C91.531 84.5123 90.5146 84.113 89.716 83.3144L65.322 58.9205C63.144 60.6629 60.6393 62.0423 57.8078 63.0587C54.9764 64.0751 51.9634 64.5833 48.769 64.5833ZM48.769 55.8712C54.2141 55.8712 58.8424 53.9655 62.6539 50.1539C66.4655 46.3423 68.3713 41.714 68.3713 36.269C68.3713 30.8239 66.4655 26.1956 62.6539 22.384C58.8424 18.5725 54.2141 16.6667 48.769 16.6667C43.3239 16.6667 38.6956 18.5725 34.884 22.384C31.0725 26.1956 29.1667 30.8239 29.1667 36.269C29.1667 41.714 31.0725 46.3423 34.884 50.1539C38.6956 53.9655 43.3239 55.8712 48.769 55.8712Z" fill="currentColor"/>
+                <path d="M52.734 29.218C52.734 28.0607 52.3463 27.1322 51.5709 26.4324C50.7955 25.7326 49.7684 25.3828 48.4897 25.3828C47.7007 25.3828 46.9866 25.551 46.3472 25.8874C45.7079 26.2238 45.1569 26.715 44.6944 27.3609C44.2591 27.9799 43.6674 28.3365 42.9192 28.4307C42.171 28.5249 41.5249 28.3298 40.9807 27.8454C40.5998 27.4955 40.389 27.0649 40.3482 26.5535C40.3074 26.0421 40.4366 25.5577 40.7359 25.1002C41.6065 23.8083 42.7151 22.8057 44.0619 22.0925C45.4086 21.3793 46.8845 21.0227 48.4897 21.0227C51.1288 21.0227 53.2713 21.7628 54.9173 23.2431C56.5633 24.7234 57.3863 26.6612 57.3863 29.0565C57.3863 30.2676 57.1278 31.3576 56.6109 32.3265C56.094 33.2954 55.1417 34.4393 53.7542 35.758C52.7476 36.7 52.0674 37.4334 51.7137 37.9583C51.36 38.4831 51.1288 39.0819 51.0199 39.7548C50.9111 40.4007 50.6322 40.939 50.1833 41.3696C49.7344 41.8002 49.1971 42.0155 48.5714 42.0155C47.9456 42.0155 47.4083 41.8069 46.9594 41.3898C46.5105 40.9726 46.286 40.4545 46.286 39.8355C46.286 38.7859 46.5173 37.8237 46.9798 36.949C47.4423 36.0743 48.2177 35.1525 49.3059 34.1836C50.6935 32.9725 51.6117 32.0372 52.0606 31.3778C52.5095 30.7184 52.734 29.9985 52.734 29.218ZM48.4897 51.7045C47.5919 51.7045 46.8233 51.3883 46.184 50.7558C45.5446 50.1233 45.2249 49.363 45.2249 48.4748C45.2249 47.5867 45.5446 46.8264 46.184 46.1939C46.8233 45.5614 47.5919 45.2452 48.4897 45.2452C49.3875 45.2452 50.1561 45.5614 50.7955 46.1939C51.4348 46.8264 51.7545 47.5867 51.7545 48.4748C51.7545 49.363 51.4348 50.1233 50.7955 50.7558C50.1561 51.3883 49.3875 51.7045 48.4897 51.7045Z" fill="currentColor"/>
+              </svg>
+            </div>
+            <div class="ds-empty-state__body">
+              @if (allWorkflows().length === 0) {
+                <p class="ds-empty-state__heading">No workflows yet for {{ trigger().label }}</p>
+                <p class="ds-empty-state__description">Workflows you create for this trigger will appear here, in execution order.</p>
+                <div class="ds-empty-state__actions">
+                  <button class="ds-button ds-button--filled ds-button--md ds-button--leading-icon"
+                          type="button"
+                          (click)="openBuilder({ new: 1, category: categoryId(), trigger: trigger().id })">
+                    <span class="ds-icon" aria-hidden="true">add</span>
+                    Add Workflow
+                  </button>
+                </div>
+              } @else {
+                <p class="ds-empty-state__heading">No workflows match</p>
+                <p class="ds-empty-state__description">
+                  @if (searchActive()) {
+                    Nothing matched “{{ search().trim() }}”. Try a different search or clear the query.
+                  } @else {
+                    Nothing matches the current filter.
+                  }
+                </p>
+              }
+            </div>
+          </div>
+        } @else {
+          <div class="wf-cards">
+            @for (wf of visible(); track wf.id; let i = $index) {
+              <article class="wf-card" [class.is-disabled]="wf.disabled">
+                <!-- Left rail: position number + drag handle -->
+                <div class="wf-card__rail">
+                  <div class="wf-card__number">{{ positionLabel(i) }}</div>
+                  <span class="ds-icon wf-card__drag" aria-hidden="true"
+                        [class.is-disabled]="searchActive()">drag_indicator</span>
+                </div>
+
+                <div class="wf-card__body">
+                  <div class="wf-card__head">
+                    <div class="wf-card__title-row">
+                      <h3 class="wf-card__name">{{ wf.name }}</h3>
+                      @for (t of wf.tags; track t) {
+                        <span class="ds-label ds-label--grey ds-label--sm">{{ t }}</span>
+                      }
+                      @if (wf.disabled) {
+                        <span class="ds-label ds-label--disabled ds-label--sm ds-label--pill ds-label--has-dot">
+                          <span class="ds-label__dot" aria-hidden="true"></span>Disabled
+                        </span>
+                      }
+                    </div>
+                    <p class="wf-card__desc">{{ wf.description }}</p>
+                  </div>
+
+                  <div class="wf-card__actions">
+                    <button type="button" class="ds-icon-button ds-icon-button--icon ds-icon-button--sm"
+                            [attr.aria-label]="isCollapsed(wf.id) ? 'Expand workflow' : 'Collapse workflow'"
+                            (click)="toggleCollapsed(wf.id)">
+                      <span class="ds-icon" aria-hidden="true">
+                        {{ isCollapsed(wf.id) ? 'expand_more' : 'expand_less' }}
+                      </span>
+                    </button>
+                    <div class="wf-menu-anchor">
+                      <button type="button" class="ds-icon-button ds-icon-button--icon ds-icon-button--sm"
+                              aria-label="Workflow options"
+                              [attr.aria-expanded]="openMenuId() === wf.id"
+                              (click)="toggleMenu(wf.id, $event)">
+                        <span class="ds-icon" aria-hidden="true">more_vert</span>
+                      </button>
+                      @if (openMenuId() === wf.id) {
+                        <div class="ds-menu wf-card-menu" role="menu" (click)="$event.stopPropagation()">
+                          <button type="button" class="ds-menu__item" role="menuitem"
+                                  (click)="onWorkflowAction(wf.id, 'edit', $event)">
+                            <span class="ds-icon ds-icon--sm ds-icon--filled ds-menu__item-icon" aria-hidden="true">edit</span>Edit Workflow
+                          </button>
+                          <button type="button" class="ds-menu__item" role="menuitem"
+                                  (click)="onWorkflowAction(wf.id, 'view-logs', $event)">
+                            <span class="ds-icon ds-icon--sm ds-icon--filled ds-menu__item-icon" aria-hidden="true">monitoring</span>View Execution Logs
+                          </button>
+                          <button type="button" class="ds-menu__item" role="menuitem"
+                                  (click)="onWorkflowAction(wf.id, 'copy', $event)">
+                            <span class="ds-icon ds-icon--sm ds-icon--filled ds-menu__item-icon" aria-hidden="true">content_copy</span>Copy Workflow
+                          </button>
+                          <button type="button" class="ds-menu__item" role="menuitem"
+                                  (click)="onWorkflowAction(wf.id, wf.disabled ? 'enable' : 'disable', $event)">
+                            <span class="ds-icon ds-icon--sm ds-icon--filled ds-menu__item-icon" aria-hidden="true">{{ wf.disabled ? 'play_arrow' : 'pause' }}</span>
+                            {{ wf.disabled ? 'Enable Workflow' : 'Disable Workflow' }}
+                          </button>
+                          <hr class="ds-menu__divider" />
+                          <button type="button" class="ds-menu__item" role="menuitem"
+                                  (click)="onWorkflowAction(wf.id, 'move-top', $event)">
+                            <span class="ds-icon ds-icon--sm ds-icon--filled ds-menu__item-icon" aria-hidden="true">vertical_align_top</span>Move to Top
+                          </button>
+                          <button type="button" class="ds-menu__item" role="menuitem"
+                                  (click)="onWorkflowAction(wf.id, 'move-bottom', $event)">
+                            <span class="ds-icon ds-icon--sm ds-icon--filled ds-menu__item-icon" aria-hidden="true">vertical_align_bottom</span>Move to Bottom
+                          </button>
+                          <hr class="ds-menu__divider" />
+                          <button type="button" class="ds-menu__item ds-menu__item--destructive" role="menuitem"
+                                  (click)="onWorkflowAction(wf.id, 'delete', $event)">
+                            <span class="ds-icon ds-icon--sm ds-icon--filled ds-menu__item-icon" aria-hidden="true">delete</span>Delete Workflow
+                          </button>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                @if (!isCollapsed(wf.id)) {
+                  <div class="wf-card__detail">
+                    @for (c of wf.conditions; track $index; let ci = $index) {
+                      <div class="wf-clause" [class.is-indented]="ci > 0">
+                        <span class="wf-clause__icon">
+                          @if (ci === 0) {
+                            <span class="ds-icon ds-icon--sm" aria-hidden="true">filter_alt</span>
+                          }
+                        </span>
+                        <span class="wf-clause__kind">{{ ci === 0 ? 'WHEN' : 'AND' }}</span>
+                        <span class="ds-label ds-label--grey ds-label--xs wf-clause__field">{{ c.field }}</span>
+                        <span class="wf-clause__operator">{{ c.operator }}</span>
+                        <span class="wf-clause__value">{{ c.value }}</span>
+                      </div>
+                    }
+                    @for (a of wf.actions; track $index; let ai = $index) {
+                      <div class="wf-clause" [class.is-indented]="ai > 0">
+                        <span class="wf-clause__icon">
+                          <span class="ds-icon ds-icon--sm" aria-hidden="true">play_arrow</span>
+                        </span>
+                        <span class="wf-clause__kind">THEN</span>
+                        <span class="wf-clause__text">
+                          {{ a.verb }} <span class="wf-clause__target">{{ a.target }}</span>
+                        </span>
+                      </div>
+                    }
+                    @if (wf.stop) {
+                      <div class="wf-clause is-stop">
+                        <span class="wf-clause__icon">
+                          <span class="ds-icon ds-icon--sm" aria-hidden="true">pause</span>
+                        </span>
+                        <span class="wf-clause__kind">STOP</span>
+                        <span class="wf-clause__text">Don’t execute any more workflows</span>
+                      </div>
+                    }
+                  </div>
+                }
+              </article>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Footer / pagination -->
+      <footer class="wf-list-footer">
+        <div class="wf-list-footer__group">
+          <span>Show</span>
+          <select class="ds-paginator__select"
+                  [value]="perPage()"
+                  (change)="setPerPage(+$any($event.target).value)"
+                  aria-label="Workflows per page">
+            @for (n of [10, 25, 50, 100]; track n) {
+              <option [value]="n">{{ n }}</option>
+            }
+          </select>
+          <span>per page</span>
+        </div>
+        <div class="wf-list-footer__divider"></div>
+        <span class="wf-list-footer__range">
+          @if (filtered().length === 0) {
+            0 of 0
+          } @else {
+            {{ start() + 1 }}–{{ end() }} of {{ filtered().length }}
+          }
+        </span>
+        <div class="wf-list-footer__nav">
+          <button type="button"
+                  class="ds-icon-button ds-icon-button--icon ds-icon-button--sm"
+                  aria-label="Previous page"
+                  [disabled]="safePage() <= 1"
+                  (click)="setPage(safePage() - 1)">
+            <span class="ds-icon" aria-hidden="true">chevron_left</span>
+          </button>
+          <span class="wf-list-footer__pageno">Page {{ safePage() }} of {{ totalPages() }}</span>
+          <button type="button"
+                  class="ds-icon-button ds-icon-button--icon ds-icon-button--sm"
+                  aria-label="Next page"
+                  [disabled]="safePage() >= totalPages()"
+                  (click)="setPage(safePage() + 1)">
+            <span class="ds-icon" aria-hidden="true">chevron_right</span>
+          </button>
+        </div>
+      </footer>
+    </section>
+  </div>
+</div>
+
+<!-- Test Run dialog -->
+@if (testRunOpen()) {
+  <div class="ds-dialog-backdrop wf-dialog-backdrop"
+       (click)="closeTestRun()">
+    <div class="ds-dialog wf-test-dialog" role="dialog" aria-modal="true"
+         aria-labelledby="wf-test-title" (click)="$event.stopPropagation()">
+      <div class="ds-dialog__body">
+        <h2 class="ds-dialog__title" id="wf-test-title">Test run trigger</h2>
+        <p class="wf-test-sub">{{ category().label }} › {{ trigger().label }}</p>
+
+        @if (testPhase() !== 'result') {
+          <p class="ds-dialog__text">
+            Simulates this trigger firing for a sample record. All {{ allWorkflows().length }} workflow{{ allWorkflows().length === 1 ? '' : 's' }} in this list will be evaluated against their conditions. No side effects are performed — actions are logged, not executed.
+          </p>
+          <div class="ds-input wf-test-field">
+            <label class="ds-input__label" for="wf-test-record">Sample record ID</label>
+            <div class="ds-input__field">
+              <input id="wf-test-record" class="ds-input__control"
+                     type="text"
+                     [value]="testRecordId()"
+                     (input)="setTestRecordId($any($event.target).value)"
+                     [disabled]="testPhase() === 'running'" />
+            </div>
+          </div>
+          <span class="wf-test-hint">
+            Use any existing {{ sampleNounFor(categoryId()) }} ID, or leave the sample default.
+          </span>
+        }
+
+        @if (testPhase() === 'result' && testResult(); as r) {
+          <div class="wf-test-banner">
+            <span class="ds-icon ds-icon--sm" aria-hidden="true">check_circle</span>
+            Trigger fired in {{ r.durationMs }}ms
+          </div>
+          <div class="wf-test-stats">
+            <div class="wf-test-stat">
+              <div class="wf-test-stat__value">{{ r.evaluated }}</div>
+              <div class="wf-test-stat__label">Evaluated</div>
+            </div>
+            <div class="wf-test-stat">
+              <div class="wf-test-stat__value">{{ r.matched }}</div>
+              <div class="wf-test-stat__label">Matched</div>
+            </div>
+            <div class="wf-test-stat">
+              <div class="wf-test-stat__value">{{ r.skipped }}</div>
+              <div class="wf-test-stat__label">Skipped</div>
+            </div>
+          </div>
+          <div class="wf-test-record-line">
+            Sample record: <code>{{ r.recordId }}</code>
+          </div>
+        }
+      </div>
+
+      <div class="ds-dialog__divider" aria-hidden="true"></div>
+
+      <div class="ds-dialog__actions">
+        @if (testPhase() !== 'result') {
+          <button class="ds-button ds-button--text ds-button--md"
+                  type="button"
+                  [disabled]="testPhase() === 'running'"
+                  (click)="closeTestRun()">Cancel</button>
+          <button class="ds-button ds-button--filled ds-button--md ds-button--leading-icon"
+                  type="button"
+                  [disabled]="testPhase() === 'running' || !testRecordId().trim() || allWorkflows().length === 0"
+                  (click)="runTest()">
+            <span class="ds-icon" aria-hidden="true">
+              {{ testPhase() === 'running' ? 'progress_activity' : 'play_arrow' }}
+            </span>
+            {{ testPhase() === 'running' ? 'Running…' : 'Run test' }}
+          </button>
+        } @else {
+          <button class="ds-button ds-button--text ds-button--md" type="button"
+                  (click)="runTestAgain()">Run again</button>
+          <button class="ds-button ds-button--filled ds-button--md ds-button--leading-icon"
+                  type="button"
+                  (click)="openSimulation()">
+            <span class="ds-icon" aria-hidden="true">arrow_forward</span>
+            View results
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}
