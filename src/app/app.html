@@ -340,15 +340,15 @@
                 <div class="ds-subnav-header" [class.is-expanded]="settingsExpanded['workflows'] || !!filter">
                   <button class="ds-subnav-header__row" type="button" (click)="toggleSettings('workflows')">
                     <span class="ds-icon ds-subnav-header__icon" aria-hidden="true">conversion_path</span>
-                    <span class="ds-subnav-header__label">Workflows</span>
+                    <span class="ds-subnav-header__label">Automations</span>
                     <span class="ds-icon ds-icon--sm" aria-hidden="true">{{ (settingsExpanded['workflows'] || !!filter) ? 'arrow_drop_down' : 'arrow_right' }}</span>
                   </button>
                   <div class="ds-subnav-header__children">
                     @if (!filter || filter.has('workflows-tickets')) {
-                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'workflows-tickets'" (click)="settingsNavItem = 'workflows-tickets'; goWorkflows('tickets')">Tickets</button>
+                      <button class="ds-subnav-button">Legacy Workflows</button>
                     }
                     @if (!filter || filter.has('workflows-assets')) {
-                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'workflows-assets'" (click)="settingsNavItem = 'workflows-assets'; goWorkflows('assets')">Assets</button>
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'workflows-assets'" (click)="settingsNavItem = 'workflows-assets'; goWorkflows('tickets')">Workflows</button>
                     }
                     @if (!filter || filter.has('lookup-tables')) {
                       <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'lookup-tables'" (click)="settingsNavItem = 'lookup-tables'">Lookup Tables</button>

@@ -45,7 +45,7 @@ export class App implements AfterViewInit, OnDestroy {
     if (segment === 'workflows') {
       this.activeNav = 'settings';
       this.settingsExpanded['workflows'] = true;
-      this.settingsNavItem = url.includes('category=assets') ? 'workflows-assets' : 'workflows-tickets';
+      this.settingsNavItem = 'workflows-assets';
       return;
     }
     if (!segment) {
@@ -269,8 +269,8 @@ export class App implements AfterViewInit, OnDestroy {
     { id: 'marketplace',            label: 'Marketplace',            section: 'integration-hub' },
     { id: 'installed-apps',         label: 'Installed Apps',         section: 'integration-hub' },
     // Workflows
-    { id: 'workflows-tickets',      label: 'Tickets',                section: 'workflows' },
-    { id: 'workflows-assets',       label: 'Assets',                 section: 'workflows' },
+    { id: 'workflows-tickets',      label: 'Legacy Workflows',       section: 'workflows' },
+    { id: 'workflows-assets',       label: 'Workflows',              section: 'workflows' },
     { id: 'lookup-tables',          label: 'Lookup Tables',          section: 'workflows' },
     // Tickets Settings
     { id: 'portals',                label: 'Portals',                section: 'tickets-settings', isSubheader: true },
