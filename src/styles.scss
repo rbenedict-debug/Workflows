@@ -1,0 +1,18 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* Subnav width: widened slightly from the DS default (195px) so the longest
+   Settings labels fit on one line at the standard 14px without wrapping.
+   Tuning the value upward until the longest labels stop wrapping. Overrides the
+   semantic token so both the subnav and the expand-toggle (see app.scss) track it.
+   To push into the DS later, set --ref-layout-subnav-width there instead. */
+:root {
+  --subnav-width: 205px;
+}

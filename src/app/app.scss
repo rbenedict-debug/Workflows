@@ -1,0 +1,81 @@
+.settings-subnav {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+
+  &__list {
+    position: relative;
+    flex: 1 1 0;
+    min-height: 0;
+
+  }
+
+  &__scroll {
+    height: 100%;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+
+    &::-webkit-scrollbar { display: none; }
+  }
+
+  &__track {
+    position: absolute;
+    right: calc(-1 * var(--spacing-sm) + 2px);
+    top: 4px;
+    bottom: 4px;
+    width: 6px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  &__thumb {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    min-height: 32px;
+    border-radius: var(--radius-full);
+    background: var(--color-text-secondary);
+    cursor: grab;
+  }
+}
+
+.ds-page-layout .ds-nav-expand {
+  position: absolute;
+  top: 87px;
+  /* Track the subnav width so the toggle stays on its edge when the width is tuned.
+     +75px = nav-sidebar offset; equals the original 270px at the 195px default. */
+  left: calc(var(--subnav-width) + 75px);
+  z-index: 10;
+  transition: left .2s ease;
+}
+
+.ds-page-layout .ds-nav-expand.is-collapsed {
+  left: 77px;
+}
+
+.profile-menu {
+  position: relative;
+
+  &__panel {
+    position: absolute;
+    top: calc(100% + var(--spacing-xs));
+    right: 0;
+    z-index: 20;
+  }
+}
+
+.tickets-saved-view-button {
+  &__label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

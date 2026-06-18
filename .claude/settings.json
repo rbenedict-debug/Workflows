@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(node_modules/@onflo/design-system/preview/index.html)",
+      "Read(node_modules/@onflo/design-system/dist/**)",
+      "Read(node_modules/@onflo/design-system/.claude/specs/specs-table.md)",
+      "Read(node_modules/@onflo/design-system/.claude/specs/table/**)"
+    ]
+  }
+}

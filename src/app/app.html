@@ -1,0 +1,525 @@
+<div class="ds-page-layout">
+
+  <!-- Nav sidebar -->
+  <nav class="ds-nav-sidebar" role="navigation" aria-label="Main navigation">
+    <div class="ds-nav-sidebar__logo">
+      <svg aria-hidden="true" width="100%" viewBox="0 0 80 78" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M39.8749 19.3958V0.638365C39.8749 -0.601963 34.2018 0.313146 33.0587 0.506036C-3.5372 6.66058 -12.3416 54.4009 19.823 72.4181C46.4332 87.3247 79.4384 68.6769 79.4047 38.9697H59.3621C59.9606 56.6214 36.7683 64.8841 24.8326 51.7587C13.3296 39.111 22.8489 19.2388 39.8771 19.3981Z" fill="#0B3057"/>
+        <g transform="translate(50.144 0.242)"><path d="M29.5085 0H0V19.5739H9.18769L13.1594 19.5716V29.3597H29.5085V0Z" fill="#43ADF2"/></g>
+        <g transform="translate(63.304 0.242)"><path d="M0 19.5716V29.3597H16.3491V0Z" fill="#78C2FF"/></g>
+      </svg>
+    </div>
+    <div class="ds-nav-sidebar__nav">
+      <button class="ds-nav-button" [class.is-selected]="activeNav === 'tickets'"   type="button" aria-label="Tickets"   (click)="setNav('tickets')">
+        <span class="ds-icon ds-icon--filled" aria-hidden="true">inbox</span>
+        <span class="ds-nav-button__label">Tickets</span>
+      </button>
+      <button class="ds-nav-button" [class.is-selected]="activeNav === 'assets'"    type="button" aria-label="Assets"    (click)="setNav('assets')">
+        <span class="ds-icon" aria-hidden="true">desktop_mac</span>
+        <span class="ds-nav-button__label">Assets</span>
+      </button>
+      <button class="ds-nav-button" [class.is-selected]="activeNav === 'users'"     type="button" aria-label="Users"     (click)="setNav('users')">
+        <span class="ds-icon" aria-hidden="true">group</span>
+        <span class="ds-nav-button__label">Users</span>
+      </button>
+      <button class="ds-nav-button" [class.is-selected]="activeNav === 'analytics'" type="button" aria-label="Analytics" (click)="setNav('analytics')">
+        <span class="ds-icon" aria-hidden="true">equalizer</span>
+        <span class="ds-nav-button__label">Analytics</span>
+      </button>
+      <button class="ds-nav-button" [class.is-selected]="activeNav === 'settings'"  type="button" aria-label="Settings"  (click)="setNav('settings')">
+        <span class="ds-icon ds-icon--filled" aria-hidden="true">settings</span>
+        <span class="ds-nav-button__label">Settings</span>
+      </button>
+    </div>
+    <div class="ds-nav-sidebar__bottom">
+      <button class="ds-agent-status" type="button" aria-label="Call agent status: Online">
+        <div class="ds-agent-status__icon"><span class="ds-icon" aria-hidden="true">support_agent</span></div>
+        <div class="ds-agent-status__status"><span>Online</span><span class="ds-icon" aria-hidden="true">keyboard_arrow_down</span></div>
+        <span class="ds-agent-status__indicator" aria-hidden="true"></span>
+      </button>
+      <button class="ds-agent-status is-offline" type="button" aria-label="Live agent status: Offline">
+        <div class="ds-agent-status__icon"><span class="ds-icon" aria-hidden="true">forum</span></div>
+        <div class="ds-agent-status__status"><span>Offline</span><span class="ds-icon" aria-hidden="true">keyboard_arrow_down</span></div>
+        <span class="ds-agent-status__indicator" aria-hidden="true"></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Right: top-nav + body -->
+  <div class="ds-page-layout__content">
+    <header class="ds-top-nav" role="banner">
+      <div class="ds-top-nav__tabs">
+        <div class="ds-nav-tab is-active" role="button" tabindex="0" aria-label="{{ activeNavLabel }} tab — active">
+          <div class="ds-nav-tab__content">
+            <span class="ds-nav-tab__label">{{ activeNavLabel }}</span>
+            <button class="ds-nav-tab__close" type="button" aria-label="Close {{ activeNavLabel }} tab">
+              <span class="ds-icon" aria-hidden="true">close_small</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="ds-top-nav__actions">
+        <button class="ds-top-nav__action-btn" type="button" aria-label="Chatsy">
+          <svg aria-hidden="true" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:18px;height:18px;flex-shrink:0;"><path d="M16.6419 8.93096V11.2075C16.6434 11.8671 16.5159 12.5209 16.2662 13.1342C16.7456 13.071 17.1851 12.8411 17.5036 12.4871C17.8221 12.133 17.9979 11.6788 17.9986 11.2085V10.7708C17.9956 10.3651 17.8633 9.97022 17.62 9.64062C17.3767 9.31101 17.0343 9.06285 16.6399 8.9303" fill="currentColor"/><path d="M1.6434 12.8987C1.6194 12.8306 1.59675 12.7617 1.57547 12.6919C1.56901 12.6721 1.56358 12.6516 1.55814 12.6318C1.54252 12.5763 1.52689 12.5224 1.51296 12.4666C1.50436 12.432 1.49643 12.3971 1.48919 12.3619C1.479 12.318 1.46881 12.2724 1.45963 12.2298C1.45046 12.1872 1.44299 12.1403 1.43484 12.0911C1.42668 12.0418 1.42193 12.0194 1.41649 11.9827C1.40732 11.9289 1.40189 11.8754 1.39543 11.8215C1.39543 11.7911 1.38728 11.7598 1.38456 11.732C1.37811 11.6712 1.37369 11.6101 1.36996 11.5484C1.3709 11.5228 1.36907 11.4972 1.36452 11.4721C1.36452 11.3825 1.35807 11.293 1.35807 11.2098V8.93328C0.964056 9.06555 0.621864 9.31327 0.378551 9.64238C0.135237 9.97149 0.00275433 10.3658 -0.000679157 10.7711V11.2088C-0.000193948 11.6792 0.175587 12.1335 0.494109 12.4876C0.812631 12.8417 1.25231 13.0715 1.73172 13.1345C1.70138 13.0594 1.67284 12.9833 1.64612 12.9063C1.64631 12.9039 1.64631 12.9014 1.64612 12.899" fill="currentColor"/><path d="M11.0571 6.58443H6.97411C6.09783 6.58539 5.25773 6.92431 4.63811 7.52683C4.01848 8.12935 3.66995 8.94627 3.66896 9.79836V10.8144C3.66995 11.6665 4.01848 12.4834 4.63811 13.0859C5.25773 13.6885 6.09783 14.0274 6.97411 14.0283H11.0571C11.9334 14.0274 12.7735 13.6885 13.3931 13.0859C14.0128 12.4834 14.3613 11.6665 14.3623 10.8144V9.79836C14.3613 8.94627 14.0128 8.12935 13.3931 7.52683C12.7735 6.92431 11.9334 6.58539 11.0571 6.58443ZM5.46148 9.45979C5.46148 9.29301 5.51235 9.12997 5.60764 8.99129C5.70293 8.85261 5.83837 8.74453 5.99683 8.6807C6.1553 8.61687 6.32967 8.60017 6.49789 8.63271C6.66611 8.66525 6.82064 8.74557 6.94192 8.8635C7.0632 8.98144 7.1458 9.1317 7.17926 9.29528C7.21272 9.45886 7.19555 9.62841 7.12991 9.7825C7.06427 9.93659 6.95312 10.0683 6.81051 10.161C6.66789 10.2536 6.50023 10.3031 6.32871 10.3031C6.0987 10.3031 5.87812 10.2142 5.71549 10.0561C5.55285 9.89794 5.46148 9.68345 5.46148 9.45979ZM9.14403 12.4785C8.20061 12.4664 7.27635 12.2179 6.4605 11.7571L6.71085 11.3667C7.4117 11.7689 8.21064 11.9811 9.02446 11.9811C9.83828 11.9811 10.6372 11.7689 11.3381 11.3667L11.5996 11.7498C10.8746 12.2259 10.0192 12.479 9.14437 12.4765M11.6631 10.3011C11.4916 10.3011 11.324 10.2516 11.1813 10.159C11.0387 10.0663 10.9276 9.93461 10.8619 9.78052C10.7963 9.62643 10.7791 9.45688 10.8126 9.2933C10.846 9.12971 10.9286 8.97946 11.0499 8.86152C11.1712 8.74359 11.3257 8.66327 11.494 8.63073C11.6622 8.59819 11.8366 8.61489 11.995 8.67872C12.1535 8.74255 12.2889 8.85063 12.3842 8.98931C12.4795 9.12799 12.5304 9.29103 12.5304 9.45781C12.5304 9.68146 12.439 9.89596 12.2764 10.0541C12.1137 10.2122 11.8931 10.3011 11.6631 10.3011Z" fill="currentColor"/><path d="M11.1913 4.2445H9.34342V3.39164C9.70111 3.31393 10.0164 3.10985 10.2281 2.81895C10.4399 2.52805 10.533 2.17107 10.4895 1.8172C10.4459 1.46333 10.2688 1.13779 9.99246 0.903685C9.71612 0.669579 9.36022 0.543586 8.99378 0.550132C8.62733 0.556677 8.27644 0.695295 8.00912 0.939113C7.7418 1.18293 7.57711 1.51458 7.54696 1.86976C7.51681 2.22495 7.62336 2.57837 7.84594 2.8615C8.06853 3.14464 8.39131 3.33733 8.75169 3.40221V4.24417H6.84333C5.6332 4.24659 4.46648 4.68283 3.56644 5.46942C2.6664 6.25601 2.09625 7.33771 1.96509 8.50751L1.95592 8.6066C1.94958 8.67729 1.94493 8.74533 1.94199 8.81073C1.93927 8.87679 1.93655 8.94946 1.93655 9.0185V11.2002C1.93655 11.2773 1.93871 11.3534 1.94301 11.4285V11.4526C1.94301 11.5252 1.9532 11.5976 1.96033 11.6702V11.7016C1.96848 11.7713 1.97698 11.8413 1.98785 11.91L1.9943 11.9467C2.00551 12.0148 2.0174 12.0811 2.03099 12.1472L2.04118 12.1948C2.05205 12.243 2.06326 12.2916 2.07515 12.3388C2.08704 12.386 2.09824 12.4283 2.11115 12.4709L2.13323 12.5489C2.2119 12.804 2.31234 13.0522 2.43352 13.2911L2.50145 13.4262C2.91877 14.1943 3.54355 14.8372 4.30859 15.2858C5.07362 15.7344 5.94996 15.9717 6.84333 15.9722H10.0897H10.0985L12.2535 17.6981C12.2831 17.7224 12.3193 17.738 12.3577 17.7431C12.3962 17.7481 12.4353 17.7424 12.4705 17.7266C12.5057 17.7107 12.5355 17.6855 12.5564 17.6538C12.5774 17.6221 12.5886 17.5852 12.5888 17.5475L12.6177 15.7701L12.7834 15.7152C13.7513 15.3922 14.5915 14.7837 15.1869 13.9745C15.7823 13.1653 16.1033 12.1956 16.1052 11.2005V9.02048C16.1041 7.75373 15.586 6.53921 14.6646 5.6437C13.7433 4.74819 12.494 4.24494 11.1913 4.2445ZM14.9391 10.8058C14.938 11.7971 14.5326 12.7474 13.8119 13.4484C13.0911 14.1494 12.1139 14.5437 11.0945 14.5449H7.01113C5.99176 14.5437 5.0145 14.1494 4.29376 13.4484C3.57302 12.7474 3.16764 11.7971 3.16656 10.8058V9.78845C3.16809 8.7975 3.57366 7.84757 4.29436 7.14695C5.01505 6.44633 5.99205 6.0522 7.01113 6.05098H11.0942C12.1133 6.05211 13.0904 6.44621 13.8112 7.14683C14.5319 7.84746 14.9376 8.79744 14.9391 9.78845V10.8058Z" fill="currentColor"/></svg>
+        </button>
+        <div class="ds-top-nav__action-badge">
+          <button class="ds-top-nav__action-btn ds-top-nav__action-btn--orange" type="button" aria-label="Notifications">
+            <span class="ds-icon ds-icon--filled" aria-hidden="true">notifications</span>
+          </button>
+          <div class="ds-badge-indicator" aria-hidden="true">3</div>
+        </div>
+        <button class="ds-top-nav__action-btn ds-top-nav__action-btn--green" type="button" aria-label="New">
+          <span class="ds-icon" aria-hidden="true">add_2</span>
+        </button>
+        <button class="ds-top-nav__action-btn" type="button" aria-label="Help">
+          <span class="ds-icon ds-icon--filled" aria-hidden="true">person_raised_hand</span>
+        </button>
+        <div class="profile-menu">
+          <button class="ds-top-nav__action-btn ds-top-nav__action-btn--navy" type="button"
+                  aria-label="Profile" aria-haspopup="menu" [attr.aria-expanded]="profileMenuOpen"
+                  (click)="profileMenuOpen = !profileMenuOpen">
+            R
+          </button>
+          @if (profileMenuOpen) {
+            <div class="ds-menu profile-menu__panel" role="menu">
+              <div class="ds-menu__section-label">Appearance</div>
+              <button class="ds-menu__item ds-menu__item--indent"
+                      [class.ds-menu__item--selected]="theme === 'light'"
+                      role="menuitemradio" [attr.aria-checked]="theme === 'light'"
+                      (click)="setTheme('light')">
+                @if (theme === 'light') {
+                  <span class="ds-menu__item-check"><span class="ds-icon ds-icon--filled" style="font-size:18px;" aria-hidden="true">check</span></span>
+                }
+                Light
+              </button>
+              <button class="ds-menu__item ds-menu__item--indent"
+                      [class.ds-menu__item--selected]="theme === 'dark'"
+                      role="menuitemradio" [attr.aria-checked]="theme === 'dark'"
+                      (click)="setTheme('dark')">
+                @if (theme === 'dark') {
+                  <span class="ds-menu__item-check"><span class="ds-icon ds-icon--filled" style="font-size:18px;" aria-hidden="true">check</span></span>
+                }
+                Dark
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    </header>
+
+    <div class="ds-page-layout__body">
+      <!-- Subnav — content varies by active nav section -->
+      <nav class="ds-subnav" [class.is-collapsed]="!subNavOpen" role="navigation" aria-label="Section navigation">
+
+        @if (activeNav === 'tickets') {
+          <button class="ds-subnav-button" [class.is-selected]="ticketsNavItem === 'inbox'" (click)="ticketsNavItem = 'inbox'">Inbox</button>
+          <button class="ds-subnav-button" [class.is-selected]="ticketsNavItem === 'bookmarks'" (click)="ticketsNavItem = 'bookmarks'">Bookmarks</button>
+          <button class="ds-subnav-button" [class.is-selected]="ticketsNavItem === 'spam'" (click)="ticketsNavItem = 'spam'">Spam</button>
+          <button class="ds-subnav-button" [class.is-selected]="ticketsNavItem === 'drafts'" (click)="ticketsNavItem = 'drafts'">Drafts</button>
+          <div class="ds-subnav-header" [class.is-expanded]="ticketSavedViewsExpanded">
+            <button class="ds-subnav-header__row" type="button" (click)="ticketSavedViewsExpanded = !ticketSavedViewsExpanded">
+              <span class="ds-icon ds-icon--filled ds-subnav-header__icon" aria-hidden="true">bookmark</span>
+              <span class="ds-subnav-header__label">Saved Views</span>
+              <span class="ds-icon ds-icon--sm" aria-hidden="true">{{ ticketSavedViewsExpanded ? 'arrow_drop_down' : 'arrow_right' }}</span>
+            </button>
+            <div class="ds-subnav-header__children">
+              @for (view of ticketSavedViews; track view.id) {
+                <button class="ds-subnav-button tickets-saved-view-button"
+                  [class.is-selected]="ticketsNavItem === 'saved-view-' + view.id"
+                  (click)="ticketsNavItem = 'saved-view-' + view.id">
+                  <span class="tickets-saved-view-button__label">{{ view.name }}</span>
+                  @if (view.ticketCount > 0) {
+                    <span class="ds-badge-indicator ds-badge-indicator--grey" aria-hidden="true">
+                      {{ view.ticketCount > 999 ? '999+' : view.ticketCount }}
+                    </span>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+          <div class="ds-subnav-header" [class.is-expanded]="savedSearchesExpanded">
+            <button class="ds-subnav-header__row" type="button" (click)="savedSearchesExpanded = !savedSearchesExpanded">
+              <span class="ds-icon ds-subnav-header__icon" aria-hidden="true">search</span>
+              <span class="ds-subnav-header__label">Saved Searches</span>
+              <span class="ds-icon ds-icon--sm" aria-hidden="true">{{ savedSearchesExpanded ? 'arrow_drop_down' : 'arrow_right' }}</span>
+            </button>
+            <div class="ds-subnav-header__children">
+              <button class="ds-subnav-button" [class.is-selected]="ticketsNavItem === 'ss-high-priority'" (click)="ticketsNavItem = 'ss-high-priority'">High Priority — Open</button>
+              <button class="ds-subnav-button" [class.is-selected]="ticketsNavItem === 'ss-unassigned-p1'" (click)="ticketsNavItem = 'ss-unassigned-p1'">Unassigned — P1</button>
+              <button class="ds-subnav-button" [class.is-selected]="ticketsNavItem === 'ss-my-team'" (click)="ticketsNavItem = 'ss-my-team'">My Team's Queue</button>
+              <button class="ds-subnav-button" [class.is-selected]="ticketsNavItem === 'ss-overdue'" (click)="ticketsNavItem = 'ss-overdue'">Overdue This Week</button>
+              <button class="ds-subnav-button" [class.is-selected]="ticketsNavItem === 'ss-waiting'" (click)="ticketsNavItem = 'ss-waiting'">Waiting on Customer</button>
+            </div>
+          </div>
+        }
+
+        @if (activeNav === 'assets') {
+          <button class="ds-subnav-button" [class.is-selected]="assetsNavItem === 'overview'" (click)="assetsNavItem = 'overview'">Overview</button>
+          <button class="ds-subnav-button" [class.is-selected]="assetsNavItem === 'asset-views'" (click)="assetsNavItem = 'asset-views'">Asset Views</button>
+          <button class="ds-subnav-button" [class.is-selected]="assetsNavItem === 'actions'" (click)="assetsNavItem = 'actions'">Actions</button>
+        }
+
+        @if (activeNav === 'analytics') {
+          <button class="ds-subnav-button" [class.is-selected]="analyticsNavItem === 'service-overview'" (click)="analyticsNavItem = 'service-overview'">Service Overview</button>
+          <button class="ds-subnav-button" [class.is-selected]="analyticsNavItem === 'chatbot'" (click)="analyticsNavItem = 'chatbot'">Chatbot</button>
+          <button class="ds-subnav-button" [class.is-selected]="analyticsNavItem === 'call-center'" (click)="analyticsNavItem = 'call-center'">Call Center</button>
+          <button class="ds-subnav-button" [class.is-selected]="analyticsNavItem === 'custom-reports'" (click)="analyticsNavItem = 'custom-reports'">Custom Reports</button>
+          <button class="ds-subnav-button" [class.is-selected]="analyticsNavItem === 'fees'" (click)="analyticsNavItem = 'fees'">Fees</button>
+          <div class="ds-subnav-header" [class.is-expanded]="comparisonExpanded">
+            <button class="ds-subnav-header__row" type="button" (click)="comparisonExpanded = !comparisonExpanded">
+              <span class="ds-icon ds-subnav-header__icon" aria-hidden="true">splitscreen_left</span>
+              <span class="ds-subnav-header__label">Comparison</span>
+              <span class="ds-icon ds-icon--sm" aria-hidden="true">{{ comparisonExpanded ? 'arrow_drop_down' : 'arrow_right' }}</span>
+            </button>
+            <div class="ds-subnav-header__children">
+              <button class="ds-subnav-button" [class.is-selected]="analyticsNavItem === 'comparison-users'" (click)="analyticsNavItem = 'comparison-users'">Users</button>
+              <button class="ds-subnav-button" [class.is-selected]="analyticsNavItem === 'comparison-categories'" (click)="analyticsNavItem = 'comparison-categories'">Categories</button>
+              <button class="ds-subnav-button" [class.is-selected]="analyticsNavItem === 'comparison-topics'" (click)="analyticsNavItem = 'comparison-topics'">Topics</button>
+            </div>
+          </div>
+          <div class="ds-subnav-header" [class.is-expanded]="analyticsSavedViewsExpanded">
+            <button class="ds-subnav-header__row" type="button" (click)="analyticsSavedViewsExpanded = !analyticsSavedViewsExpanded">
+              <span class="ds-icon ds-icon--filled ds-subnav-header__icon" aria-hidden="true">bookmark</span>
+              <span class="ds-subnav-header__label">Saved Views</span>
+              <span class="ds-icon ds-icon--sm" aria-hidden="true">{{ analyticsSavedViewsExpanded ? 'arrow_drop_down' : 'arrow_right' }}</span>
+            </button>
+            <div class="ds-subnav-header__children">
+              @for (view of analyticsSavedViews; track view.id) {
+                <button class="ds-subnav-button" [class.is-selected]="analyticsNavItem === view.id" (click)="analyticsNavItem = view.id">{{ view.name }}</button>
+              }
+            </div>
+          </div>
+        }
+
+        @if (activeNav === 'settings') {
+          @let filter = settingsFilteredIds;
+          @let vis = settingsSectionVis;
+
+          <div class="settings-subnav">
+            <div class="ds-input ds-search">
+              <div class="ds-input__field">
+                <input class="ds-input__control" type="search" placeholder="Search Settings"
+                       aria-label="Search settings"
+                       [value]="settingsSearchQuery"
+                       (input)="settingsSearchQuery = $any($event.target).value" />
+                @if (settingsSearchQuery) {
+                  <button class="ds-input__action" type="button" aria-label="Clear search"
+                          (click)="settingsSearchQuery = ''">
+                    <span class="ds-icon ds-icon--sm" aria-hidden="true">close</span>
+                  </button>
+                }
+              </div>
+            </div>
+            <div class="settings-subnav__list">
+              <div class="settings-subnav__scroll">
+
+              @if (vis.global) {
+                <div class="ds-subnav-header" [class.is-expanded]="settingsExpanded['global'] || !!filter">
+                  <button class="ds-subnav-header__row" type="button" (click)="toggleSettings('global')">
+                    <span class="ds-icon ds-subnav-header__icon" aria-hidden="true">language</span>
+                    <span class="ds-subnav-header__label">Global</span>
+                    <span class="ds-icon ds-icon--sm" aria-hidden="true">{{ (settingsExpanded['global'] || !!filter) ? 'arrow_drop_down' : 'arrow_right' }}</span>
+                  </button>
+                  <div class="ds-subnav-header__children">
+                    @if (!filter || filter.has('district-profile')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'district-profile'" (click)="settingsNavItem = 'district-profile'">District Profile</button>
+                    }
+                    @if (!filter || filter.has('activity-log-onflo') || filter.has('activity-log-assets')) {
+                      <div class="ds-subnav-subheader" [class.is-expanded]="settingsExpanded['activity-log'] || !!filter">
+                        <button class="ds-subnav-subheader__row" type="button" (click)="toggleSettings('activity-log')">
+                          <span class="ds-subnav-subheader__label">Activity Log</span>
+                          <span class="ds-icon" aria-hidden="true">{{ (settingsExpanded['activity-log'] || !!filter) ? 'arrow_drop_down' : 'arrow_right' }}</span>
+                        </button>
+                        <div class="ds-subnav-subheader__children">
+                          <div class="ds-subnav-subheader__line" aria-hidden="true"></div>
+                          <div class="ds-subnav-subheader__slot">
+                            @if (!filter || filter.has('activity-log-onflo')) {
+                              <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'activity-log-onflo'" (click)="settingsNavItem = 'activity-log-onflo'">Onflo</button>
+                            }
+                            @if (!filter || filter.has('activity-log-assets')) {
+                              <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'activity-log-assets'" (click)="settingsNavItem = 'activity-log-assets'">Assets</button>
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    }
+                    @if (!filter || filter.has('ai-training')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'ai-training'" (click)="settingsNavItem = 'ai-training'">AI Training Resources</button>
+                    }
+                    @if (!filter || filter.has('chatbot')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'chatbot'" (click)="settingsNavItem = 'chatbot'">Chatbot</button>
+                    }
+                    @if (!filter || filter.has('cs-score-templates') || filter.has('email') || filter.has('response-templates')) {
+                      <div class="ds-subnav-subheader" [class.is-expanded]="settingsExpanded['communications'] || !!filter">
+                        <button class="ds-subnav-subheader__row" type="button" (click)="toggleSettings('communications')">
+                          <span class="ds-subnav-subheader__label">Communications</span>
+                          <span class="ds-icon" aria-hidden="true">{{ (settingsExpanded['communications'] || !!filter) ? 'arrow_drop_down' : 'arrow_right' }}</span>
+                        </button>
+                        <div class="ds-subnav-subheader__children">
+                          <div class="ds-subnav-subheader__line" aria-hidden="true"></div>
+                          <div class="ds-subnav-subheader__slot">
+                            @if (!filter || filter.has('cs-score-templates')) {
+                              <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'cs-score-templates'" (click)="settingsNavItem = 'cs-score-templates'">CS Score Templates</button>
+                            }
+                            @if (!filter || filter.has('email')) {
+                              <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'email'" (click)="settingsNavItem = 'email'">Email</button>
+                            }
+                            @if (!filter || filter.has('response-templates')) {
+                              <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'response-templates'" (click)="settingsNavItem = 'response-templates'">Response Templates</button>
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    }
+                    @if (!filter || filter.has('departments')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'departments'" (click)="settingsNavItem = 'departments'">Departments</button>
+                    }
+                    @if (!filter || filter.has('keyword-alerts')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'keyword-alerts'" (click)="settingsNavItem = 'keyword-alerts'">Keyword Alerts</button>
+                    }
+                    @if (!filter || filter.has('languages')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'languages'" (click)="settingsNavItem = 'languages'">Languages</button>
+                    }
+                    @if (!filter || filter.has('live-agent')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'live-agent'" (click)="settingsNavItem = 'live-agent'">Live Agent</button>
+                    }
+                    @if (!filter || filter.has('locations')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'locations'" (click)="settingsNavItem = 'locations'">Locations</button>
+                    }
+                    @if (!filter || filter.has('tags-tickets') || filter.has('tags-assets')) {
+                      <div class="ds-subnav-subheader" [class.is-expanded]="settingsExpanded['tags'] || !!filter">
+                        <button class="ds-subnav-subheader__row" type="button" (click)="toggleSettings('tags')">
+                          <span class="ds-subnav-subheader__label">Tags</span>
+                          <span class="ds-icon" aria-hidden="true">{{ (settingsExpanded['tags'] || !!filter) ? 'arrow_drop_down' : 'arrow_right' }}</span>
+                        </button>
+                        <div class="ds-subnav-subheader__children">
+                          <div class="ds-subnav-subheader__line" aria-hidden="true"></div>
+                          <div class="ds-subnav-subheader__slot">
+                            @if (!filter || filter.has('tags-tickets')) {
+                              <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'tags-tickets'" (click)="settingsNavItem = 'tags-tickets'">Tickets</button>
+                            }
+                            @if (!filter || filter.has('tags-assets')) {
+                              <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'tags-assets'" (click)="settingsNavItem = 'tags-assets'">Assets</button>
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    }
+                    @if (!filter || filter.has('user-management')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'user-management'" (click)="settingsNavItem = 'user-management'">User Management</button>
+                    }
+                  </div>
+                </div>
+              }
+
+              @if (vis.integrationHub) {
+                <div class="ds-subnav-header" [class.is-expanded]="settingsExpanded['integration-hub'] || !!filter">
+                  <button class="ds-subnav-header__row" type="button" (click)="toggleSettings('integration-hub')">
+                    <span class="ds-icon ds-subnav-header__icon" aria-hidden="true">apps</span>
+                    <span class="ds-subnav-header__label">Integration Hub</span>
+                    <span class="ds-icon ds-icon--sm" aria-hidden="true">{{ (settingsExpanded['integration-hub'] || !!filter) ? 'arrow_drop_down' : 'arrow_right' }}</span>
+                  </button>
+                  <div class="ds-subnav-header__children">
+                    @if (!filter || filter.has('api-tokens')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'api-tokens'" (click)="settingsNavItem = 'api-tokens'">API Tokens</button>
+                    }
+                    @if (!filter || filter.has('webhooks')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'webhooks'" (click)="settingsNavItem = 'webhooks'">Webhooks</button>
+                    }
+                    @if (!filter || filter.has('marketplace')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'marketplace'" (click)="settingsNavItem = 'marketplace'">Marketplace</button>
+                    }
+                    @if (!filter || filter.has('installed-apps')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'installed-apps'" (click)="settingsNavItem = 'installed-apps'">Installed Apps</button>
+                    }
+                  </div>
+                </div>
+              }
+
+              @if (vis.workflows) {
+                <div class="ds-subnav-header" [class.is-expanded]="settingsExpanded['workflows'] || !!filter">
+                  <button class="ds-subnav-header__row" type="button" (click)="toggleSettings('workflows')">
+                    <span class="ds-icon ds-subnav-header__icon" aria-hidden="true">conversion_path</span>
+                    <span class="ds-subnav-header__label">Workflows</span>
+                    <span class="ds-icon ds-icon--sm" aria-hidden="true">{{ (settingsExpanded['workflows'] || !!filter) ? 'arrow_drop_down' : 'arrow_right' }}</span>
+                  </button>
+                  <div class="ds-subnav-header__children">
+                    @if (!filter || filter.has('workflows-tickets')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'workflows-tickets'" (click)="settingsNavItem = 'workflows-tickets'">Tickets</button>
+                    }
+                    @if (!filter || filter.has('workflows-assets')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'workflows-assets'" (click)="settingsNavItem = 'workflows-assets'">Assets</button>
+                    }
+                    @if (!filter || filter.has('lookup-tables')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'lookup-tables'" (click)="settingsNavItem = 'lookup-tables'">Lookup Tables</button>
+                    }
+                  </div>
+                </div>
+              }
+
+              @if (vis.ticketsSettings) {
+                <div class="ds-subnav-header" [class.is-expanded]="settingsExpanded['tickets-settings'] || !!filter">
+                  <button class="ds-subnav-header__row" type="button" (click)="toggleSettings('tickets-settings')">
+                    <span class="ds-icon ds-icon--filled ds-subnav-header__icon" aria-hidden="true">inbox</span>
+                    <span class="ds-subnav-header__label">Tickets</span>
+                    <span class="ds-icon ds-icon--sm" aria-hidden="true">{{ (settingsExpanded['tickets-settings'] || !!filter) ? 'arrow_drop_down' : 'arrow_right' }}</span>
+                  </button>
+                  <div class="ds-subnav-header__children">
+                    @if (!filter || filter.has('portals-it-service') || filter.has('portals-landing-page')) {
+                      <div class="ds-subnav-subheader" [class.is-expanded]="settingsExpanded['portals'] || !!filter">
+                        <button class="ds-subnav-subheader__row" type="button" (click)="toggleSettings('portals')">
+                          <span class="ds-subnav-subheader__label">Portals</span>
+                          <span class="ds-icon" aria-hidden="true">{{ (settingsExpanded['portals'] || !!filter) ? 'arrow_drop_down' : 'arrow_right' }}</span>
+                        </button>
+                        <div class="ds-subnav-subheader__children">
+                          <div class="ds-subnav-subheader__line" aria-hidden="true"></div>
+                          <div class="ds-subnav-subheader__slot">
+                            @if (!filter || filter.has('portals-it-service')) {
+                              <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'portals-it-service'" (click)="settingsNavItem = 'portals-it-service'">IT Service</button>
+                            }
+                            @if (!filter || filter.has('portals-landing-page')) {
+                              <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'portals-landing-page'" (click)="settingsNavItem = 'portals-landing-page'">Landing Page / Tab</button>
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    }
+                    @if (!filter || filter.has('forms')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'forms'" (click)="settingsNavItem = 'forms'">Forms</button>
+                    }
+                    @if (!filter || filter.has('saved-exports')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'saved-exports'" (click)="settingsNavItem = 'saved-exports'">Saved Exports</button>
+                    }
+                    @if (!filter || filter.has('slas')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'slas'" (click)="settingsNavItem = 'slas'">SLAs</button>
+                    }
+                    @if (!filter || filter.has('ticket-schedules')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'ticket-schedules'" (click)="settingsNavItem = 'ticket-schedules'">Ticket Schedules</button>
+                    }
+                    @if (!filter || filter.has('topics') || filter.has('success-messages')) {
+                      <div class="ds-subnav-subheader" [class.is-expanded]="settingsExpanded['topics-manager'] || !!filter">
+                        <button class="ds-subnav-subheader__row" type="button" (click)="toggleSettings('topics-manager')">
+                          <span class="ds-subnav-subheader__label">Topics Manager</span>
+                          <span class="ds-icon" aria-hidden="true">{{ (settingsExpanded['topics-manager'] || !!filter) ? 'arrow_drop_down' : 'arrow_right' }}</span>
+                        </button>
+                        <div class="ds-subnav-subheader__children">
+                          <div class="ds-subnav-subheader__line" aria-hidden="true"></div>
+                          <div class="ds-subnav-subheader__slot">
+                            @if (!filter || filter.has('topics')) {
+                              <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'topics'" (click)="settingsNavItem = 'topics'">Topics</button>
+                            }
+                            @if (!filter || filter.has('success-messages')) {
+                              <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'success-messages'" (click)="settingsNavItem = 'success-messages'">Success Messages</button>
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              @if (vis.assetsSettings) {
+                <div class="ds-subnav-header" [class.is-expanded]="settingsExpanded['assets-settings'] || !!filter">
+                  <button class="ds-subnav-header__row" type="button" (click)="toggleSettings('assets-settings')">
+                    <span class="ds-icon ds-subnav-header__icon" aria-hidden="true">desktop_mac</span>
+                    <span class="ds-subnav-header__label">Assets</span>
+                    <span class="ds-icon ds-icon--sm" aria-hidden="true">{{ (settingsExpanded['assets-settings'] || !!filter) ? 'arrow_drop_down' : 'arrow_right' }}</span>
+                  </button>
+                  <div class="ds-subnav-header__children">
+                    @if (!filter || filter.has('archived-assets')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'archived-assets'" (click)="settingsNavItem = 'archived-assets'">Archived Assets</button>
+                    }
+                    @if (!filter || filter.has('asset-fields')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'asset-fields'" (click)="settingsNavItem = 'asset-fields'">Asset Fields</button>
+                    }
+                    @if (!filter || filter.has('asset-hierarchy')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'asset-hierarchy'" (click)="settingsNavItem = 'asset-hierarchy'">Asset Hierarchy</button>
+                    }
+                    @if (!filter || filter.has('funding-sources')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'funding-sources'" (click)="settingsNavItem = 'funding-sources'">Funding Sources</button>
+                    }
+                    @if (!filter || filter.has('manufacturers')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'manufacturers'" (click)="settingsNavItem = 'manufacturers'">Manufacturers</button>
+                    }
+                    @if (!filter || filter.has('models')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'models'" (click)="settingsNavItem = 'models'">Models</button>
+                    }
+                    @if (!filter || filter.has('purchase-order-details')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'purchase-order-details'" (click)="settingsNavItem = 'purchase-order-details'">Purchase Order Details</button>
+                    }
+                    @if (!filter || filter.has('statuses')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'statuses'" (click)="settingsNavItem = 'statuses'">Statuses</button>
+                    }
+                    @if (!filter || filter.has('suppliers')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'suppliers'" (click)="settingsNavItem = 'suppliers'">Suppliers</button>
+                    }
+                  </div>
+                </div>
+              }
+
+              @if (vis.callCenter) {
+                <div class="ds-subnav-header" [class.is-expanded]="settingsExpanded['call-center'] || !!filter">
+                  <button class="ds-subnav-header__row" type="button" (click)="toggleSettings('call-center')">
+                    <span class="ds-icon ds-icon--filled ds-subnav-header__icon" aria-hidden="true">headset_mic</span>
+                    <span class="ds-subnav-header__label">Call Center</span>
+                    <span class="ds-icon ds-icon--sm" aria-hidden="true">{{ (settingsExpanded['call-center'] || !!filter) ? 'arrow_drop_down' : 'arrow_right' }}</span>
+                  </button>
+                  <div class="ds-subnav-header__children">
+                    @if (!filter || filter.has('business-hours')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'business-hours'" (click)="settingsNavItem = 'business-hours'">Business Hours</button>
+                    }
+                    @if (!filter || filter.has('calendar')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'calendar'" (click)="settingsNavItem = 'calendar'">Calendar</button>
+                    }
+                    @if (!filter || filter.has('call-notes')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'call-notes'" (click)="settingsNavItem = 'call-notes'">Call Notes</button>
+                    }
+                    @if (!filter || filter.has('contact-numbers')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'contact-numbers'" (click)="settingsNavItem = 'contact-numbers'">Contact Numbers</button>
+                    }
+                    @if (!filter || filter.has('greetings')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'greetings'" (click)="settingsNavItem = 'greetings'">Greetings</button>
+                    }
+                    @if (!filter || filter.has('ivr')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'ivr'" (click)="settingsNavItem = 'ivr'">IVR</button>
+                    }
+                    @if (!filter || filter.has('queues')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'queues'" (click)="settingsNavItem = 'queues'">Queues</button>
+                    }
+                    @if (!filter || filter.has('texting')) {
+                      <button class="ds-subnav-button" [class.is-selected]="settingsNavItem === 'texting'" (click)="settingsNavItem = 'texting'">Texting</button>
+                    }
+                  </div>
+                </div>
+              }
+
+              </div><!-- /.settings-subnav__scroll -->
+              <div class="settings-subnav__track" aria-hidden="true">
+                <div class="settings-subnav__thumb"></div>
+              </div>
+            </div><!-- /.settings-subnav__list -->
+          </div><!-- /.settings-subnav -->
+        }
+
+      </nav>
+
+      <!-- Routed page content -->
+      <router-outlet />
+    </div>
+  </div>
+
+  <button class="ds-nav-expand"
+          [class.is-collapsed]="!subNavOpen"
+          type="button"
+          [attr.aria-expanded]="subNavOpen"
+          [attr.aria-label]="subNavOpen ? 'Collapse navigation' : 'Expand navigation'"
+          (click)="subNavOpen = !subNavOpen">
+    @if (subNavOpen) {
+      <span class="ds-icon ds-icon--filled" aria-hidden="true">right_panel_open</span>
+    } @else {
+      <span class="ds-icon ds-icon--filled" aria-hidden="true">right_panel_close</span>
+    }
+  </button>
+
+</div>
