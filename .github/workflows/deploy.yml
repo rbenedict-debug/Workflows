@@ -1,0 +1,59 @@
+name: Deploy prototype to GitHub Pages
+
+# Builds the Angular prototype and publishes it to GitHub Pages on every push to
+# main, so the shared stakeholder link always reflects the latest commit.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+# Permissions the deploy-pages action needs.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deploy at a time; newer pushes supersede in-flight ones.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # base-href must match the repo name so assets resolve under
+      # https://<user>.github.io/Workflows/
+      - run: npx ng build --base-href /Workflows/
+
+      # SPA deep-link fallback: GitHub Pages has no server-side routing, so serve
+      # index.html for unknown paths (e.g. /Workflows/workflows/builder) via 404.html.
+      - name: Add SPA fallback
+        run: cp dist/Onflo-Project-Template/browser/index.html dist/Onflo-Project-Template/browser/404.html
+
+      # Stop Pages' Jekyll processing from touching the Angular output.
+      - name: Disable Jekyll
+        run: touch dist/Onflo-Project-Template/browser/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/Onflo-Project-Template/browser
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

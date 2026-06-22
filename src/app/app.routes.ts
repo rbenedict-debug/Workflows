@@ -10,7 +10,7 @@ import { ExecutionLogsComponent } from './pages/workflows/execution-logs.compone
 import { SimulationResultsComponent } from './pages/workflows/simulation-results.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'tickets', pathMatch: 'full' },
+  { path: '', redirectTo: 'workflows', pathMatch: 'full' },
   { path: 'tickets', component: TicketsComponent },
   { path: 'assets', component: AssetsComponent },
   { path: 'users', component: UsersComponent },
