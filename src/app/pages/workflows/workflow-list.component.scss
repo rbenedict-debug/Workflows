@@ -4,53 +4,46 @@
 // DS components carry their own styling; this file is layout + a few bespoke
 // pieces (rail, cards, clause rows) built strictly on design tokens.
 
-:host { display: block; height: 100%; min-height: 0; }
+:host { height: 100%; min-height: 0; }
 
-.wf-list-main {
-  // Neutralise the default page card — the rail and pane provide their own chrome.
-  background: transparent;
-  box-shadow: none;
-  border-radius: 0;
-  padding: 0;
-  height: 100%;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.wf-list {
-  display: flex;
-  gap: var(--spacing-md);
-  height: 100%;
-  min-height: 0;
-}
+// The page uses the DS split-page primitive (a direct child of ds-page-content,
+// sibling of __heading, never wrapped in __main). Each panel carries its own card
+// shell, so the rail and pane no longer paint their own background/border/shadow.
 
 // ── Left rail ────────────────────────────────────────────────────────────────
-.wf-list__rail {
-  flex-shrink: 0;
-  width: 244px;
+.ds-split-page__panel--left {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
   min-height: 0;
+  overflow: hidden;   // panel itself doesn't scroll — only the Triggers body does
+  // No flex gap — the inset divider provides the separation between the two
+  // sections, so its spacing comes only from the sections' own paddings.
+}
+
+// ds-divider is full-width by default; in this flex column that forced width
+// overflows the middle-inset's right margin (then the panel's overflow:hidden
+// clips it, so the right inset reads as missing). Sizing to auto lets it stretch
+// within its margins, so the inset shows on both sides.
+.ds-divider--middle-inset {
+  width: auto;
+  margin-inline: var(--spacing-xl);
 }
 
 .wf-rail-panel {
-  background: var(--color-surface-default);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-elevation-1);
   display: flex;
   flex-direction: column;
+  flex: 0 0 auto;        // Category: fixed height, always visible
   min-height: 0;
 
-  &--scroll { flex: 1 1 auto; }
+  &--scroll { flex: 1 1 auto; }   // Triggers: fills the remaining height
 }
 
 .wf-rail-panel__title {
-  @include ds.type-label-small;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--color-text-secondary);
+  // DS section-header convention (matches ds-menu__section-label): bold body-medium,
+  // primary text — not the input "overline" (uppercase label-small) treatment.
+  @include ds.type-body-medium;
+  font-weight: var(--ref-typescale-body-medium-weight-prominent);
+  color: var(--color-text-primary);
   padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
 }
 
@@ -59,8 +52,13 @@
   flex-direction: column;
   gap: 2px;
   padding: 0 var(--spacing-sm) var(--spacing-sm);
-  overflow-y: auto;
+}
+
+// Only the Triggers section scrolls; Category stays pinned above it.
+.wf-rail-panel--scroll .wf-rail-panel__body {
+  flex: 1 1 auto;
   min-height: 0;
+  overflow-y: auto;
 }
 
 .wf-rail-row {
@@ -76,8 +74,12 @@
   text-align: left;
   color: var(--color-text-primary);
   @include ds.type-body-small;
+  transition: background var(--motion-duration-short, 150ms) ease;
 
-  &:hover { background: var(--overlay-hover); }
+  // DS interaction tints — correct tokens are --overlay-hovered / --overlay-pressed.
+  // (The ported code used --overlay-hover, which doesn't exist, so hover was dead.)
+  &:hover  { background: var(--overlay-hovered); }
+  &:active { background: var(--overlay-pressed); }
   &:focus { outline: none; }
   &:focus-visible { box-shadow: 0 0 0 3px var(--color-border-ada-focus-ring); }
 
@@ -85,6 +87,10 @@
     background: var(--color-surface-brand);
     color: var(--color-text-brand);
     font-weight: var(--ref-typescale-body-small-weight-prominent);
+
+    // Keep the hover/pressed tint readable over the selected (brand) background.
+    &:hover  { background: linear-gradient(var(--overlay-hovered), var(--overlay-hovered)), var(--color-surface-brand); }
+    &:active { background: linear-gradient(var(--overlay-pressed), var(--overlay-pressed)), var(--color-surface-brand); }
   }
 
   &__icon { color: var(--color-icon-secondary); }
@@ -95,15 +101,13 @@
 }
 
 // ── List pane ────────────────────────────────────────────────────────────────
-.wf-list__pane {
-  flex: 1 1 auto;
-  min-width: 0;
+// Right panel: a fixed-height flex column so the header + toolbar stay pinned at
+// the top, the paginator stays pinned at the bottom, and only the workflow stream
+// scrolls between them.
+.ds-split-page__panel--right {
   display: flex;
   flex-direction: column;
-  background: var(--color-surface-default);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-elevation-1);
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -114,11 +118,7 @@
   padding: var(--spacing-md) var(--spacing-lg);
   border-bottom: 1px solid var(--color-border-subtle);
   flex-wrap: wrap;
-
-  &__breadcrumb {
-    @include ds.type-body-small;
-    color: var(--color-text-secondary);
-  }
+  flex-shrink: 0;
 
   &__search {
     margin-left: auto;
@@ -133,6 +133,19 @@
   gap: var(--spacing-md);
   padding: var(--spacing-sm) var(--spacing-lg);
   border-bottom: 1px solid var(--color-border-subtle);
+  flex-shrink: 0;
+
+  &__context {
+    @include ds.type-label-medium;
+    color: var(--color-text-secondary);
+  }
+
+  &__divider {
+    flex-shrink: 0;
+    width: 1px;
+    height: 20px;
+    background: var(--color-border-subtle);
+  }
 
   &__count {
     @include ds.type-label-medium;
@@ -148,11 +161,6 @@
   }
 
   &__spacer { flex: 1 1 auto; }
-}
-
-.wf-collapse-toggle .ds-toggle__label {
-  @include ds.type-body-small;
-  color: var(--color-text-secondary);
 }
 
 // ── Stream ───────────────────────────────────────────────────────────────────
@@ -176,46 +184,76 @@
 // ── Workflow card (bespoke layout, DS atoms inside) ───────────────────────────
 .wf-card {
   display: flex;
-  gap: var(--spacing-sm);
-  background: var(--color-surface-default);
+  background: var(--color-surface-page);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-elevation-1);
-  padding: var(--spacing-md);
   transition: box-shadow var(--motion-duration-short, 150ms) ease;
 
   &:hover { box-shadow: var(--shadow-elevation-2); }
 
+  // Drag-to-reorder feedback
+  &.is-dragging { opacity: 0.5; }
+  &.is-drag-over { outline: 2px solid var(--color-border-brand); outline-offset: 1px; }
+
+  // Floating drag ghost — a clone appended to <body> that follows the cursor.
+  // (Real element, so its rounded corners render cleanly; the native bitmap ghost
+  // is suppressed in onDragStart.)
+  &--ghost {
+    position: fixed;
+    z-index: 1000;
+    margin: 0;
+    pointer-events: none;
+    opacity: 1;
+    box-shadow: var(--shadow-elevation-3);
+  }
+
   &.is-disabled {
     background: var(--color-surface-subtle);
-    .wf-card__name, .wf-card__desc { color: var(--color-text-secondary); }
+
+    // Mute the content so it reads as inactive, but keep the Disabled pill at full
+    // opacity so the state stays unmistakable. Grip + collapse/menu controls also
+    // stay full (they're outside these selectors) so they remain usable.
+    .wf-card__title-row > *:not(.wf-card__status),
+    .wf-card__desc,
+    .wf-card__detail { opacity: 0.6; }
   }
 
-  &__rail {
+  // Full-height drag strip on the card's left edge (the grab target).
+  &__grip {
     flex-shrink: 0;
+    width: 28px;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: var(--spacing-xs);
-    width: 32px;
-    padding-top: 2px;
-  }
-
-  &__number {
-    @include ds.type-label-small;
-    font-variant-numeric: tabular-nums;
-    color: var(--color-text-secondary);
-  }
-
-  &__drag {
-    color: var(--color-icon-disabled);
+    justify-content: center;
+    border: none;
+    background: var(--color-surface-default);   // light surface so the strip reads clearly at rest
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);   // follow the card's left corners
+    color: var(--color-icon-subtle);
     cursor: grab;
-    &.is-disabled { opacity: 0.4; cursor: not-allowed; }
+    transition: background var(--motion-duration-short, 150ms) ease,
+                color var(--motion-duration-short, 150ms) ease;
+
+    // Layer the hover/pressed tint over the light surface so the base stays visible.
+    &:hover:not(:disabled)  { background: linear-gradient(var(--overlay-hovered), var(--overlay-hovered)), var(--color-surface-default); color: var(--color-icon-default); }
+    &:active:not(:disabled) { background: linear-gradient(var(--overlay-pressed), var(--overlay-pressed)), var(--color-surface-default); cursor: grabbing; }
+    &:focus { outline: none; }
+    &:focus-visible { box-shadow: inset 0 0 0 3px var(--color-border-ada-focus-ring); }
+    &:disabled { opacity: 0.4; cursor: not-allowed; }
+  }
+
+  // Position number — now inline at the start of the title row.
+  &__number {
+    @include ds.type-title-h4;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-brand);
+    flex-shrink: 0;
   }
 
   &__body {
     flex: 1 1 auto;
     min-width: 0;
+    padding: var(--spacing-md);
     display: grid;
     grid-template-columns: 1fr auto;
     gap: var(--spacing-xs) var(--spacing-sm);
@@ -252,7 +290,7 @@
     grid-column: 1 / -1;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: var(--spacing-sm);
     margin-top: var(--spacing-sm);
     padding-top: var(--spacing-sm);
     border-top: 1px solid var(--color-border-subtle);
@@ -263,12 +301,15 @@
 .wf-clause {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-xs);
   @include ds.type-body-small;
   color: var(--color-text-primary);
 
   &.is-indented { padding-left: var(--spacing-xl); }
-  &.is-stop { color: var(--color-text-secondary); }
+  &.is-stop {
+    .wf-clause__icon,
+    .wf-clause__kind { color: var(--color-text-error); }
+  }
 
   &__icon {
     flex-shrink: 0;
@@ -280,16 +321,24 @@
 
   &__kind {
     flex-shrink: 0;
-    width: 44px;
     @include ds.type-label-small;
     letter-spacing: 0.06em;
     color: var(--color-text-secondary);
   }
 
   &__operator { color: var(--color-text-secondary); }
-  &__value { font-weight: var(--ref-typescale-body-small-weight-prominent); }
+  &__value { font-weight: var(--ref-typeface-weight-bold); }
   &__target { font-weight: var(--ref-typescale-body-small-weight-prominent); }
   &__field { flex-shrink: 0; }
+
+  // Action text fills the row and truncates with an ellipsis only at the card edge.
+  &__text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 // Menu anchor — DS menu panel positioned under the trigger.
@@ -303,20 +352,10 @@
 }
 
 // ── Footer / pagination ───────────────────────────────────────────────────────
-.wf-list-footer {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  border-top: 1px solid var(--color-border-subtle);
-  @include ds.type-body-small;
-  color: var(--color-text-secondary);
-
-  &__group { display: flex; align-items: center; gap: var(--spacing-sm); }
-  &__divider { width: 1px; height: 20px; background: var(--color-border-subtle); }
-  &__range { margin-left: auto; }
-  &__nav { display: flex; align-items: center; gap: var(--spacing-sm); }
-  &__pageno { font-variant-numeric: tabular-nums; }
+// The DS paginator (ds-ag-paginator) carries its own chrome from the bundle; just
+// pin it at the bottom of the right panel's flex column so the stream scrolls above it.
+.ds-ag-paginator {
+  flex-shrink: 0;
 }
 
 // ── Test run dialog ────────────────────────────────────────────────────────────
@@ -336,6 +375,11 @@
   max-width: 100%;
 }
 
+.wf-delete-dialog {
+  width: 400px;
+  max-width: 100%;
+}
+
 .wf-test-sub {
   @include ds.type-body-small;
   color: var(--color-text-secondary);
@@ -351,16 +395,7 @@
   margin-top: var(--spacing-xs);
 }
 
-.wf-test-banner {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-md);
-  background: var(--color-surface-success);
-  color: var(--color-text-success);
-  @include ds.type-label-medium;
-}
+// Test-result success banner uses the DS alert (ds-alert--success) directly.
 
 .wf-test-stats {
   display: grid;

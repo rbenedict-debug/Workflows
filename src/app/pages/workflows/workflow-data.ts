@@ -108,7 +108,7 @@ export const WORKFLOWS: Workflow[] = [
     ],
     actions: [
       { verb: 'Set priority to',  target: 'High',                                   icon: 'flag' },
-      { verb: 'Internal comment', target: 'New software request requires approva…', icon: 'chat' },
+      { verb: 'Internal comment', target: 'New software request requires approval from the Director of Finance.', icon: 'chat' },
       { verb: 'Assign to',        target: 'Sarah Chen',                             icon: 'person' },
     ],
     stop: true,

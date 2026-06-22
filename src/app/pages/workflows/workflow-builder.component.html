@@ -1,100 +1,93 @@
+<!-- Unified DS empty state, reused by the Conditions and Actions sections (no action button — the section header carries the add action). -->
+<ng-template #emptyState let-heading="heading" let-desc="desc">
+  <div class="ds-empty-state wf-empty">
+    <div class="ds-empty-state__graphic" aria-hidden="true">
+      <svg viewBox="0 0 98 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10.085 31.25C12.3158 31.25 14.2877 32.0431 16.002 33.627C15.9403 34.4958 15.9092 35.3768 15.9092 36.2695C15.9093 42.3347 17.3358 47.8519 20.1709 52.7402V87.5C20.1709 90.9375 19.183 93.8802 17.208 96.3281C15.233 98.776 12.8584 100 10.085 100C7.31173 99.9999 4.93781 98.7758 2.96289 96.3281C0.987877 93.8802 1.0228e-05 90.9375 0 87.5V43.75C0 40.3125 0.987867 37.3698 2.96289 34.9219C4.93782 32.4741 7.31171 31.2501 10.085 31.25ZM30.2559 63.5752C35.6318 67.2693 41.8436 69.1289 48.7695 69.1289C49.3251 69.1289 49.8771 69.1137 50.4258 69.0869V87.5C50.4258 90.9374 49.4388 93.8802 47.4639 96.3281C45.4888 98.776 43.1143 100 40.3408 100C37.5675 100 35.1937 98.7758 33.2188 96.3281C31.2437 93.8802 30.2559 90.9375 30.2559 87.5V63.5752ZM80.6816 80.709V87.5C80.6816 90.9374 79.6947 93.8802 77.7197 96.3281C75.7447 98.776 73.3701 100 70.5967 100C67.8232 100 65.4487 98.776 63.4736 96.3281C61.4987 93.8802 60.5117 90.9374 60.5117 87.5V66.8896C62.0032 66.2906 63.426 65.5962 64.7744 64.8008L80.6816 80.709ZM40.3408 0C43.0242 0 45.3316 1.14788 47.2676 3.43945C41.1397 3.68239 35.5952 5.42309 30.7227 8.64648C31.1952 6.8081 32.0265 5.14963 33.2188 3.67188C35.1937 1.22416 37.5675 4.37684e-05 40.3408 0Z" fill="currentColor"/>
+        <ellipse cx="48.8636" cy="36.3636" rx="21.5909" ry="21.5909" style="fill: var(--color-surface-subtle)"/>
+        <path d="M48.769 64.5833C40.8555 64.5833 34.158 61.8427 28.6767 56.3613C23.1953 50.8799 20.4546 44.1825 20.4546 36.269C20.4546 28.3555 23.1953 21.658 28.6767 16.1766C34.158 10.6953 40.8555 7.95459 48.769 7.95459C56.6825 7.95459 63.3799 10.6953 68.8613 16.1766C74.3427 21.658 77.0834 28.3555 77.0834 36.269C77.0834 39.4634 76.5752 42.4763 75.5588 45.3078C74.5424 48.1392 73.1629 50.644 71.4205 52.822L95.8145 77.2159C96.6131 78.0145 97.0124 79.0309 97.0124 80.2652C97.0124 81.4994 96.6131 82.5158 95.8145 83.3144C95.0158 84.113 93.9994 84.5123 92.7652 84.5123C91.531 84.5123 90.5146 84.113 89.716 83.3144L65.322 58.9205C63.144 60.6629 60.6393 62.0423 57.8078 63.0587C54.9764 64.0751 51.9634 64.5833 48.769 64.5833ZM48.769 55.8712C54.2141 55.8712 58.8424 53.9655 62.6539 50.1539C66.4655 46.3423 68.3713 41.714 68.3713 36.269C68.3713 30.8239 66.4655 26.1956 62.6539 22.384C58.8424 18.5725 54.2141 16.6667 48.769 16.6667C43.3239 16.6667 38.6956 18.5725 34.884 22.384C31.0725 26.1956 29.1667 30.8239 29.1667 36.269C29.1667 41.714 31.0725 46.3423 34.884 50.1539C38.6956 53.9655 43.3239 55.8712 48.769 55.8712Z" fill="currentColor"/>
+        <path d="M52.734 29.218C52.734 28.0607 52.3463 27.1322 51.5709 26.4324C50.7955 25.7326 49.7684 25.3828 48.4897 25.3828C47.7007 25.3828 46.9866 25.551 46.3472 25.8874C45.7079 26.2238 45.1569 26.715 44.6944 27.3609C44.2591 27.9799 43.6674 28.3365 42.9192 28.4307C42.171 28.5249 41.5249 28.3298 40.9807 27.8454C40.5998 27.4955 40.389 27.0649 40.3482 26.5535C40.3074 26.0421 40.4366 25.5577 40.7359 25.1002C41.6065 23.8083 42.7151 22.8057 44.0619 22.0925C45.4086 21.3793 46.8845 21.0227 48.4897 21.0227C51.1288 21.0227 53.2713 21.7628 54.9173 23.2431C56.5633 24.7234 57.3863 26.6612 57.3863 29.0565C57.3863 30.2676 57.1278 31.3576 56.6109 32.3265C56.094 33.2954 55.1417 34.4393 53.7542 35.758C52.7476 36.7 52.0674 37.4334 51.7137 37.9583C51.36 38.4831 51.1288 39.0819 51.0199 39.7548C50.9111 40.4007 50.6322 40.939 50.1833 41.3696C49.7344 41.8002 49.1971 42.0155 48.5714 42.0155C47.9456 42.0155 47.4083 41.8069 46.9594 41.3898C46.5105 40.9726 46.286 40.4545 46.286 39.8355C46.286 38.7859 46.5173 37.8237 46.9798 36.949C47.4423 36.0743 48.2177 35.1525 49.3059 34.1836C50.6935 32.9725 51.6117 32.0372 52.0606 31.3778C52.5095 30.7184 52.734 29.9985 52.734 29.218ZM48.4897 51.7045C47.5919 51.7045 46.8233 51.3883 46.184 50.7558C45.5446 50.1233 45.2249 49.363 45.2249 48.4748C45.2249 47.5867 45.5446 46.8264 46.184 46.1939C46.8233 45.5614 47.5919 45.2452 48.4897 45.2452C49.3875 45.2452 50.1561 45.5614 50.7955 46.1939C51.4348 46.8264 51.7545 47.5867 51.7545 48.4748C51.7545 49.363 51.4348 50.1233 50.7955 50.7558C50.1561 51.3883 49.3875 51.7045 48.4897 51.7045Z" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="ds-empty-state__body">
+      <p class="ds-empty-state__heading">{{ heading }}</p>
+      <p class="ds-empty-state__description">{{ desc }}</p>
+    </div>
+  </div>
+</ng-template>
+
 <div class="ds-page-content__heading wf-builder-heading">
-  <h1 class="ds-page-content__title ds-sr-only">Workflow Builder</h1>
+  <button class="wf-back-btn" type="button" aria-label="Back to workflow list" (click)="back()">
+    <span class="ds-icon" aria-hidden="true">arrow_back</span>
+  </button>
+  <h1 class="ds-page-content__title">{{ isEditing() ? 'Edit workflow' : 'Create workflow' }}</h1>
 </div>
 
-<div class="ds-page-content__main wf-builder-main">
-  <div class="wf-builder">
-
-    <!-- Page header -->
-    <header class="wf-builder-header">
-      <button type="button"
-              class="ds-icon-button ds-icon-button--outlined ds-icon-button--sm"
-              aria-label="Back to workflow list"
-              (click)="back()">
-        <span class="ds-icon" aria-hidden="true">arrow_back</span>
-      </button>
-      <div class="wf-builder-header__text">
-        <div class="wf-builder-header__breadcrumb">
-          Workflows · {{ wf().triggerCategoryLabel }} · {{ wf().triggerLabel }}
-        </div>
-        <input class="wf-builder-header__name"
-               type="text"
-               [value]="wf().name"
-               (input)="setName($any($event.target).value)"
-               placeholder="Untitled workflow"
-               aria-label="Workflow name" />
-      </div>
-      <label class="ds-toggle wf-active-toggle">
-        <input type="checkbox" role="switch" class="ds-toggle__control"
-               [checked]="wf().active"
-               (change)="setActive($any($event.target).checked)" />
-        <span class="ds-toggle__track"><span class="ds-toggle__thumb"></span></span>
-        <span class="ds-toggle__label">{{ wf().active ? 'Active' : 'Inactive' }}</span>
-      </label>
-    </header>
-
-    <!-- Scrollable body -->
-    <div class="wf-builder-scroll">
-      <div class="wf-builder-body" [class.has-save-bar]="dirty()">
+<div class="wf-builder-canvas">
+  <div class="wf-builder-body">
 
         <!-- ── Details ────────────────────────────────────────────────────── -->
         <section class="wf-section">
           <header class="wf-section__head">
             <h2 class="ds-form-section-title">Workflow details</h2>
+            <div class="wf-section__head-spacer"></div>
+            <label class="ds-toggle wf-active-toggle">
+              <input type="checkbox" role="switch" class="ds-toggle__control"
+                     [checked]="wf().active"
+                     (change)="setActive($any($event.target).checked)" />
+              <span class="ds-toggle__track"><span class="ds-toggle__thumb"></span></span>
+              <span class="ds-toggle__label">{{ wf().active ? 'Active' : 'Inactive' }}</span>
+            </label>
           </header>
           <div class="wf-section__body">
             <p class="wf-section__helper">
               Name, description, tags, and lifecycle. The trigger is set at creation and cannot be changed.
             </p>
 
-            <div class="wf-field">
-              <label class="wf-field__label" for="wf-name">
-                Name <span class="wf-field__required">*</span>
-              </label>
-              <div class="ds-input" [class.is-error]="!wf().name.trim()">
-                <div class="ds-input__field">
-                  <input id="wf-name" class="ds-input__control"
-                         type="text"
-                         placeholder="e.g. Route high-priority tickets to on-call"
-                         [value]="wf().name"
-                         (input)="setName($any($event.target).value)" />
-                </div>
+            <div class="ds-input" [class.is-error]="nameError()">
+              <label class="ds-input__label" for="wf-name">Name<span class="ds-input__required" aria-hidden="true">*</span></label>
+              <div class="ds-input__field">
+                <input id="wf-name" class="ds-input__control"
+                       type="text"
+                       placeholder="e.g. Route high-priority tickets to on-call"
+                       [value]="wf().name"
+                       [attr.aria-invalid]="nameError() ? 'true' : null"
+                       (input)="setName($any($event.target).value)" />
+                @if (nameError()) {
+                  <span class="ds-icon ds-icon--sm ds-icon--filled ds-input__error-icon" aria-hidden="true">error</span>
+                }
               </div>
-              @if (!wf().name.trim()) {
-                <span class="ds-input__helper is-error" role="alert">Name is required</span>
+              @if (nameError()) {
+                <span class="ds-input__helper" role="alert">Name is required</span>
               }
             </div>
 
-            <div class="wf-field">
-              <label class="wf-field__label" for="wf-desc">
-                Description
-                <span class="wf-field__label-helper">Optional. Plain language summary of what this workflow does.</span>
-              </label>
-              <div class="ds-textarea">
-                <div class="ds-textarea__field">
-                  <textarea id="wf-desc"
-                            class="ds-textarea__control"
-                            rows="3"
-                            [value]="wf().description"
-                            (input)="setDescription($any($event.target).value)"></textarea>
+            <div class="ds-textarea" wfTextareaResize>
+              <label class="ds-textarea__label" for="wf-desc">Description</label>
+              <div class="ds-textarea__field">
+                <textarea id="wf-desc"
+                          class="ds-textarea__control"
+                          rows="3"
+                          [value]="wf().description"
+                          (input)="setDescription($any($event.target).value)"></textarea>
+                <div class="ds-textarea__resize-handle" aria-hidden="true">
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M9 3L3 9M9 7L7 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                 </div>
               </div>
+              <span class="ds-textarea__helper">Plain language summary of what this workflow does.</span>
             </div>
 
             <div class="wf-field-grid">
-              <div class="wf-field">
-                <label class="wf-field__label">
-                  Tags
-                  <span class="wf-field__label-helper">Type to search or press Enter to add a new tag.</span>
-                </label>
-                <div class="wf-tag-input">
-                  <div class="ds-autocomplete">
-                    <div class="ds-autocomplete__field">
-                      <input class="ds-autocomplete__control"
+              <div class="wf-tag-input">
+                <div class="ds-autocomplete">
+                  <label class="ds-autocomplete__label" for="wf-tags">Tags</label>
+                  <div class="wf-tag-field">
+                    <div class="ds-autocomplete__field" #tagTrig>
+                      <input id="wf-tags" class="ds-autocomplete__control"
                              type="text"
                              [value]="tagDraft()"
                              [placeholder]="wf().tags.length ? 'Add another tag…' : 'Add tag…'"
-                             role="combobox" aria-label="Add tag"
+                             role="combobox"
                              (input)="setTagDraft($any($event.target).value)"
                              (focus)="openTagDropdown()"
                              (blur)="closeTagDropdown()"
@@ -102,69 +95,61 @@
                       <span class="ds-icon ds-icon--sm ds-autocomplete__arrow" aria-hidden="true">arrow_drop_down</span>
                     </div>
                     @if (tagDropdownOpen() && filteredTagSuggestions().length > 0) {
-                      <div class="ds-autocomplete__panel wf-tag-panel" role="listbox" aria-label="Tag suggestions">
+                      <div class="ds-autocomplete__panel wf-tag-panel" [wfAnchored]="tagTrig" role="listbox" aria-label="Tag suggestions">
                         @for (s of filteredTagSuggestions(); track s) {
-                          <div class="mat-mdc-option wf-tag-option" role="option" tabindex="-1"
-                               (mousedown)="$event.preventDefault(); addTag(s)">{{ s }}</div>
+                          <button type="button" class="ds-menu__item" role="option" tabindex="-1"
+                                  (mousedown)="$event.preventDefault(); addTag(s)">{{ s }}</button>
                         }
                       </div>
                     }
                   </div>
-                  @if (wf().tags.length > 0) {
-                    <div class="wf-tag-chips" role="list" aria-label="Selected tags">
-                      @for (t of wf().tags; track t) {
-                        <span class="ds-tag ds-tag--sm" role="listitem">
-                          <span class="ds-tag__label">{{ t }}</span>
-                          <button class="ds-tag__remove" type="button" [attr.aria-label]="'Remove ' + t" (click)="removeTag(t)">
-                            <span class="ds-icon ds-icon--xs" aria-hidden="true">close</span>
-                          </button>
-                        </span>
-                      }
-                    </div>
-                  }
+                  <span class="ds-autocomplete__helper">Type to search or press Enter to add a new tag.</span>
                 </div>
+                @if (wf().tags.length > 0) {
+                  <div class="wf-tag-chips" role="list" aria-label="Selected tags">
+                    @for (t of wf().tags; track t) {
+                      <span class="ds-tag ds-tag--sm" role="listitem">
+                        <span class="ds-tag__label">{{ t }}</span>
+                        <button class="ds-tag__remove" type="button" [attr.aria-label]="'Remove ' + t" (click)="removeTag(t)">
+                          <span class="ds-icon ds-icon--xs" aria-hidden="true">close</span>
+                        </button>
+                      </span>
+                    }
+                  </div>
+                }
               </div>
 
-              <div class="wf-field">
-                <label class="wf-field__label" for="wf-exp">
-                  Expires on
-                  <span class="wf-field__label-helper">Optional. After this date the workflow stops running.</span>
-                </label>
-                <div class="ds-input">
-                  <div class="ds-input__field">
-                    <input id="wf-exp"
-                           class="ds-input__control"
-                           type="text"
-                           placeholder="mm / dd / yyyy"
-                           [value]="wf().expiresAt"
-                           (input)="setExpiresAt($any($event.target).value)" />
-                    <button type="button" class="ds-input__action" aria-label="Open date picker">
-                      <span class="ds-icon ds-icon--sm" aria-hidden="true">calendar_today</span>
-                    </button>
-                  </div>
+              <!-- TODO eng: replace with the real ds-datepicker (Angular MatDatepicker — eng/Material). Design-mode stand-in: DS input chrome + native date input gives a working calendar. -->
+              <div class="ds-input wf-date">
+                <label class="ds-input__label" for="wf-exp">Expires on</label>
+                <div class="ds-input__field">
+                  <input id="wf-exp" #expInput
+                         class="ds-input__control"
+                         type="date"
+                         [value]="wf().expiresAt"
+                         (input)="setExpiresAt($any($event.target).value)" />
+                  <button type="button" class="ds-input__action" aria-label="Open date picker" (click)="openDatePicker(expInput)">
+                    <span class="ds-icon ds-icon--sm" aria-hidden="true">calendar_today</span>
+                  </button>
                 </div>
+                <span class="ds-input__helper">After this date the workflow stops running.</span>
               </div>
             </div>
 
             <div class="wf-field">
-              <label class="wf-field__label">
-                Trigger
-                <span class="wf-field__label-helper">Trigger is set when the workflow is created and cannot be changed.</span>
-              </label>
-              <div class="wf-trigger-pill">
-                <span class="ds-icon wf-trigger-pill__icon" aria-hidden="true">{{ wf().triggerIcon }}</span>
-                <span class="wf-trigger-pill__label">{{ wf().triggerLabel }}</span>
-                <span class="ds-label ds-label--grey ds-label--xs">{{ wf().categoryId }}</span>
-              </div>
-              <div class="wf-trigger-config-slot">
-                <header class="wf-trigger-config-slot__head">
-                  <h3>No configuration required</h3>
-                  <span>This trigger fires automatically — no extra setup needed.</span>
-                </header>
-                <div class="wf-trigger-config-slot__body">
-                  <em>Trigger: {{ wf().triggerLabel }}.</em>
+              <label class="wf-field__label">Trigger</label>
+              <div class="wf-trigger">
+                <span class="wf-trigger__icon" aria-hidden="true">
+                  <span class="ds-icon ds-icon--sm">{{ wf().triggerIcon }}</span>
+                </span>
+                <div class="wf-trigger__text">
+                  <span class="wf-trigger__name">{{ wf().triggerLabel }}</span>
+                  <span class="wf-trigger__meta">{{ wf().triggerCategoryLabel }}</span>
                 </div>
+                <span class="ds-icon ds-icon--sm ds-icon--filled wf-trigger__lock" aria-hidden="true">lock</span>
               </div>
+              <span class="wf-trigger-note">Set when the workflow is created — it can't be changed.</span>
+              <!-- TODO eng: all current triggers fire automatically (no config). If one ever needs setup (e.g. On a Schedule), render its config form here. -->
             </div>
           </div>
         </section>
@@ -173,31 +158,20 @@
         <section class="wf-section">
           <header class="wf-section__head">
             <h2 class="ds-form-section-title">Conditions</h2>
-            <span class="ds-label ds-label--grey ds-label--sm ds-label--pill">{{ totalConditions() }}</span>
+            @if (totalConditions() > 0) {
+              <span class="ds-badge-indicator ds-badge-indicator--blue" aria-hidden="true">{{ totalConditions() }}</span>
+            }
             <div class="wf-section__head-spacer"></div>
-            <button class="ds-button ds-button--outlined ds-button--sm ds-button--leading-icon"
+            <button class="ds-button ds-button--filled ds-button--sm ds-button--leading-icon"
                     type="button" (click)="addGroup()">
               <span class="ds-icon" aria-hidden="true">add</span>
-              Add group
+              Add condition group
             </button>
           </header>
           <div class="wf-section__body">
             @if (wf().conditions.groups.length === 0) {
-              <p class="wf-section__helper">
-                No conditions — this workflow will run on every trigger event.
-              </p>
-              <div class="wf-mini-empty">
-                <span class="ds-icon wf-mini-empty__icon" aria-hidden="true">filter_alt_off</span>
-                <div class="wf-mini-empty__title">No conditions set</div>
-                <div class="wf-mini-empty__hint">
-                  This workflow will run on every trigger event. Add a condition group to scope it.
-                </div>
-                <button class="ds-button ds-button--outlined ds-button--sm ds-button--leading-icon"
-                        type="button" (click)="addGroup()">
-                  <span class="ds-icon" aria-hidden="true">add</span>
-                  Add condition group
-                </button>
-              </div>
+              <ng-container [ngTemplateOutlet]="emptyState"
+                [ngTemplateOutletContext]="{ heading: 'No conditions yet', desc: 'This workflow runs on every trigger event. Add a condition group to narrow when it runs.' }"></ng-container>
             }
             @if (wf().conditions.groups.length > 0) {
               <p class="wf-section__helper">
@@ -222,7 +196,7 @@
                   }
                   <div class="wf-condition-group">
                     <header class="wf-condition-group__head">
-                      <span class="wf-condition-group__num">{{ gi + 1 }}</span>
+                      <span class="wf-condition-group__num">{{ pad2(gi + 1) }}</span>
                       <span class="wf-condition-group__label">Match</span>
                       <div class="wf-segment" role="group" aria-label="Match all or any">
                         <button type="button" class="wf-segment__btn"
@@ -256,7 +230,7 @@
                           <div class="ds-select wf-cond-select wf-cond-select--field"
                                [class.is-open]="isSelectOpen(r.id + '-field')">
                             <div class="ds-select__field-row">
-                              <div class="ds-select__field" (click)="toggleSelect(r.id + '-field', $event)">
+                              <div class="ds-select__field" #fieldTrig (click)="toggleSelect(r.id + '-field', $event)">
                                 <input class="ds-select__control" type="text" readonly
                                        [value]="r.field"
                                        placeholder="Select field…"
@@ -265,7 +239,7 @@
                                 <span class="ds-icon ds-icon--sm ds-select__arrow" aria-hidden="true">arrow_drop_down</span>
                               </div>
                               @if (isSelectOpen(r.id + '-field')) {
-                                <div class="ds-select__dropdown" role="listbox" aria-label="Field">
+                                <div class="ds-select__dropdown" [wfAnchored]="fieldTrig" [anchoredScroll]="false" role="listbox" aria-label="Field">
                                   <div class="ds-menu">
                                     @for (f of fieldOptions; track f) {
                                       <button type="button" class="ds-menu__item" role="option"
@@ -289,7 +263,7 @@
                             <div class="ds-select wf-cond-select wf-cond-select--operator"
                                  [class.is-open]="isSelectOpen(r.id + '-operator')">
                               <div class="ds-select__field-row">
-                                <div class="ds-select__field" (click)="toggleSelect(r.id + '-operator', $event)">
+                                <div class="ds-select__field" #opTrig (click)="toggleSelect(r.id + '-operator', $event)">
                                   <input class="ds-select__control" type="text" readonly
                                          [value]="r.operator"
                                          placeholder="Operator"
@@ -298,7 +272,7 @@
                                   <span class="ds-icon ds-icon--sm ds-select__arrow" aria-hidden="true">arrow_drop_down</span>
                                 </div>
                                 @if (isSelectOpen(r.id + '-operator')) {
-                                  <div class="ds-select__dropdown" role="listbox" aria-label="Operator">
+                                  <div class="ds-select__dropdown" [wfAnchored]="opTrig" [anchoredScroll]="false" role="listbox" aria-label="Operator">
                                     <div class="ds-menu">
                                       @for (o of operatorOptions; track o) {
                                         <button type="button" class="ds-menu__item" role="option"
@@ -361,18 +335,20 @@
         <section class="wf-section">
           <header class="wf-section__head">
             <h2 class="ds-form-section-title">Actions</h2>
-            <span class="ds-label ds-label--grey ds-label--sm ds-label--pill">{{ wf().actions.length }}</span>
+            @if (wf().actions.length > 0) {
+              <span class="ds-badge-indicator ds-badge-indicator--blue" aria-hidden="true">{{ wf().actions.length }}</span>
+            }
             <div class="wf-section__head-spacer"></div>
             <div class="wf-action-picker-anchor">
-              <button class="ds-button ds-button--outlined ds-button--sm ds-button--leading-icon"
-                      type="button"
+              <button class="ds-button ds-button--filled ds-button--sm ds-button--leading-icon"
+                      type="button" #pickerBtn
                       [attr.aria-expanded]="pickerOpen()"
                       (click)="togglePicker($event)">
                 <span class="ds-icon" aria-hidden="true">add</span>
                 Add action
               </button>
               @if (pickerOpen()) {
-                <div class="ds-menu wf-action-picker" role="menu" (click)="$event.stopPropagation()">
+                <div class="ds-menu wf-action-picker" [wfAnchored]="pickerBtn" anchoredAlign="end" role="menu" (click)="$event.stopPropagation()">
                   <div class="ds-menu__section-label">Assignment</div>
                   <button type="button" class="ds-menu__item ds-menu__item--indent" role="menuitem" (click)="addAction('assign_agent', 'person', 'Assign to agent')">
                     <span class="ds-icon ds-icon--sm ds-icon--filled ds-menu__item-icon" aria-hidden="true">person</span>Assign to agent
@@ -409,19 +385,18 @@
             </div>
           </header>
           <div class="wf-section__body">
-            <p class="wf-section__helper">Actions run top-to-bottom in this order when the workflow matches.</p>
+            @if (wf().actions.length > 0) {
+              <p class="wf-section__helper">Actions run top-to-bottom in this order when the workflow matches.</p>
+            }
 
             @if (wf().actions.length === 0) {
-              <div class="wf-mini-empty">
-                <span class="ds-icon wf-mini-empty__icon" aria-hidden="true">bolt</span>
-                <div class="wf-mini-empty__title">No actions yet</div>
-                <div class="wf-mini-empty__hint">Add at least one action for this workflow to do anything.</div>
-              </div>
+              <ng-container [ngTemplateOutlet]="emptyState"
+                [ngTemplateOutletContext]="{ heading: 'No actions yet', desc: 'Add an action so this workflow does something when it runs.' }"></ng-container>
             }
 
             <div class="wf-action-list">
               @for (a of wf().actions; track a.id; let ai = $index) {
-                <div class="wf-action-card" [class.is-error]="a.hasError">
+                <div class="wf-action-card" [class.is-error]="showErrors() && a.hasError">
                   <div class="wf-action-card__head" (click)="toggleAction(a.id)">
                     <div class="wf-action-card__sort">
                       <button type="button" class="ds-icon-button ds-icon-button--icon ds-icon-button--sm"
@@ -437,15 +412,15 @@
                         <span class="ds-icon ds-icon--sm" aria-hidden="true">expand_more</span>
                       </button>
                     </div>
-                    <span class="wf-action-card__index">{{ ai + 1 }}</span>
-                    <span class="wf-action-card__icon" [class.is-error]="a.hasError">
+                    <span class="wf-action-card__index">{{ pad2(ai + 1) }}</span>
+                    <span class="wf-action-card__icon" [class.is-error]="showErrors() && a.hasError">
                       <span class="ds-icon ds-icon--sm" aria-hidden="true">{{ a.icon }}</span>
                     </span>
                     <div class="wf-action-card__text">
                       <div class="wf-action-card__name">{{ a.name }}</div>
                       @if (a.summary) {
-                        <div class="wf-action-card__summary" [class.is-error]="a.hasError">
-                          @if (a.hasError) {
+                        <div class="wf-action-card__summary" [class.is-error]="showErrors() && a.hasError">
+                          @if (showErrors() && a.hasError) {
                             <span class="ds-icon ds-icon--sm ds-icon--filled" aria-hidden="true">error</span>
                           }
                           {{ a.summary }}
@@ -481,7 +456,7 @@
             </div>
 
             <div class="wf-stop-after" [class.is-on]="wf().stopAfter">
-              <span class="ds-icon" aria-hidden="true">
+              <span class="ds-icon wf-stop-after__icon" aria-hidden="true">
                 {{ wf().stopAfter ? 'do_not_disturb_on' : 'stop_circle' }}
               </span>
               <div class="wf-stop-after__text">
@@ -501,27 +476,21 @@
         </section>
 
       </div>
-    </div>
-
-    @if (dirty()) {
-      <div class="wf-save-bar-wrap">
-        <div class="ds-save-bar" [class.ds-save-bar--error]="hasErrors()"
-             [attr.role]="hasErrors() ? 'alert' : 'status'" aria-live="polite">
-          <div class="ds-save-bar__message">
-            <span class="ds-save-bar__dot" aria-hidden="true"></span>
-            <span class="ds-save-bar__text">
-              {{ hasErrors() ? 'Required information missing' : 'You have unsaved changes' }}
-            </span>
-          </div>
-          <div class="ds-save-bar__actions">
-            <button class="ds-button ds-button--text" type="button" (click)="cancelChanges()">Cancel</button>
-            <button class="ds-button ds-button--outlined" type="button"
-                    [disabled]="hasErrors()" (click)="saveProgress()">Save Progress</button>
-            <button class="ds-button ds-button--filled" type="button"
-                    [disabled]="hasErrors()" (click)="saveAndExit()">Save and Exit</button>
-          </div>
-        </div>
-      </div>
-    }
-  </div>
 </div>
+
+@if (dirty()) {
+  <div class="ds-save-bar" [class.ds-save-bar--error]="saveBarError()"
+       [attr.role]="saveBarError() ? 'alert' : 'status'" aria-live="polite">
+    <div class="ds-save-bar__message">
+      <span class="ds-save-bar__dot" aria-hidden="true"></span>
+      <span class="ds-save-bar__text">
+        {{ saveBarError() ? 'Required information missing' : 'You have unsaved changes' }}
+      </span>
+    </div>
+    <div class="ds-save-bar__actions">
+      <button class="ds-button ds-button--text ds-button--md" type="button" (click)="cancelChanges()">Cancel</button>
+      <button class="ds-button ds-button--outlined ds-button--md" type="button" (click)="saveProgress()">Save Progress</button>
+      <button class="ds-button ds-button--filled ds-button--md" type="button" (click)="saveAndExit()">Save and Exit</button>
+    </div>
+  </div>
+}

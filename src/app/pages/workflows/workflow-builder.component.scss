@@ -5,57 +5,46 @@
 // buttons, labels) carry their styling; this file is layout + a few bespoke
 // pieces (segmented control, trigger pill, action cards) on design tokens.
 
-:host { display: block; height: 100%; min-height: 0; }
+// Host inherits ds-page-content (flex column, gap, left padding) — it paints no
+// background of its own, so the form sits on the app's grey canvas, where the
+// white __main card would normally sit. No host override needed.
 
-.wf-builder-main {
-  padding: 0;
-  height: 100%;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.wf-builder {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
-}
-
-// ── Header ─────────────────────────────────────────────────────────────────
-.wf-builder-header {
-  flex-shrink: 0;
-  display: flex;
+// ── Heading: back arrow + page title (matches AI-voice queue-detail) ─────────
+// AI-voice's --color-icon-secondary is undefined there too, so its arrow falls
+// back to the inherited primary text color (#2D3638). We use --color-icon-default
+// (same value). And we center-align instead of AI-voice's flex-start + margin
+// nudge, because this project's title font (Urbanist) has different metrics.
+.wf-builder-heading {
+  flex-direction: row;
   align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-bottom: 1px solid var(--color-border-subtle);
+  gap: var(--spacing-xs);
+  padding-top: var(--spacing-sm);
 
-  &__text { flex: 1 1 auto; min-width: 0; }
+  // Zero the title's own padding so the vertical centering stays clean.
+  .ds-page-content__title { padding: 0; }
+}
 
-  &__breadcrumb {
-    @include ds.type-body-small;
-    color: var(--color-text-secondary);
-  }
+.wf-back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-sm);
+  color: var(--color-icon-default);
+  cursor: pointer;
+  line-height: 1;
 
-  &__name {
-    @include ds.type-title-h3;
-    width: 100%;
-    border: none;
-    background: transparent;
-    color: var(--color-text-primary);
-    padding: 2px 0;
-    border-bottom: 1px solid transparent;
-
-    &:hover { border-bottom-color: var(--color-border-input); }
-    &:focus { outline: none; border-bottom-color: var(--color-surface-brand-bold); }
-    &::placeholder { color: var(--color-text-placeholder); }
-  }
+  &:hover { background: var(--overlay-hovered); }
+  &:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--color-border-ada-focus-ring); }
 }
 
 .wf-active-toggle { flex-shrink: 0; }
 
-// ── Scroll body ──────────────────────────────────────────────────────────────
-.wf-builder-scroll {
+// ── Form canvas (scroll region on the page background — no card) ─────────────
+.wf-builder-canvas {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
@@ -64,7 +53,7 @@
 .wf-builder-body {
   max-width: 920px;
   margin: 0 auto;
-  padding: var(--spacing-xl);
+  padding-bottom: var(--spacing-xl);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xl);
@@ -72,9 +61,11 @@
 
 // ── Section ────────────────────────────────────────────────────────────────
 .wf-section {
-  border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-lg);
-  background: var(--color-surface-default);
+  background: var(--color-surface-page);
+  // --shadow-elevation-1 is a color token, not a full shadow — compose it like
+  // the standard ds-page-content__main card does.
+  box-shadow: 0 0 2px 0 var(--shadow-elevation-1), 0 2px 6px 2px var(--shadow-elevation-1);
   overflow: hidden;
 
   &__head {
@@ -102,16 +93,19 @@
 }
 
 // ── Fields ─────────────────────────────────────────────────────────────────
+// Only the read-only Trigger row still uses .wf-field (it's a pill display, not a
+// DS form input). Its label matches the DS form labels (label-small, prominent
+// weight) so it sits flush with the converted ds-input/ds-textarea/ds-autocomplete fields.
 .wf-field {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
 
   &__label {
-    @include ds.type-label-medium;
+    @include ds.type-label-small;
+    font-weight: var(--ref-typescale-label-small-weight-prominent);
     color: var(--color-text-primary);
   }
-  &__required { color: var(--color-text-error); }
   &__label-helper {
     @include ds.type-body-small;
     font-weight: 400;
@@ -126,9 +120,15 @@
   gap: var(--spacing-lg);
 }
 
+// Date field (design-mode ds-datepicker stand-in): native <input type="date"> in
+// DS input chrome. Hide the browser's own calendar indicator so the DS calendar
+// button is the single affordance (it opens the native picker via showPicker()).
+.wf-date .ds-input__control::-webkit-calendar-picker-indicator { display: none; }
+
 // ── Tag autocomplete ─────────────────────────────────────────────────────────
-.wf-tag-input { position: relative; }
-.wf-tag-input .ds-autocomplete { position: relative; }
+// Anchor the dropdown panel to the field wrapper (not the whole ds-autocomplete),
+// so it drops below the input rather than below the label/helper.
+.wf-tag-field { position: relative; }
 
 .wf-tag-panel {
   position: absolute;
@@ -141,8 +141,6 @@
   overflow-y: auto;
 }
 
-.wf-tag-option { cursor: pointer; }
-
 .wf-tag-chips {
   display: flex;
   flex-wrap: wrap;
@@ -151,38 +149,54 @@
 }
 
 // ── Trigger pill ─────────────────────────────────────────────────────────────
-.wf-trigger-pill {
-  display: inline-flex;
+// Read-only trigger summary — icon tile + name over category, with a lock cue.
+// Compact (hugs content) + muted surface so it reads as a fixed value, not an input.
+.wf-trigger {
+  align-self: flex-start;
+  display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-md);
   padding: var(--spacing-sm) var(--spacing-md);
   border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   background: var(--color-surface-subtle);
-  width: fit-content;
 
-  &__icon { color: var(--color-icon-brand); }
-  &__label {
+  &__icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    background: var(--color-surface-brand);
+    color: var(--color-icon-brand);
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  &__name {
     @include ds.type-label-medium;
     color: var(--color-text-primary);
   }
-}
-
-.wf-trigger-config-slot {
-  margin-top: var(--spacing-sm);
-  border: 1px dashed var(--color-border-subtle);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-md);
-
-  &__head {
-    h3 { @include ds.type-label-medium; margin: 0; color: var(--color-text-primary); }
-    span { @include ds.type-body-small; color: var(--color-text-secondary); }
-  }
-  &__body {
+  &__meta {
     @include ds.type-body-small;
     color: var(--color-text-secondary);
-    margin-top: var(--spacing-sm);
   }
+
+  &__lock {
+    flex-shrink: 0;
+    margin-left: var(--spacing-sm);
+    color: var(--color-icon-disabled);
+  }
+}
+
+.wf-trigger-note {
+  @include ds.type-body-small;
+  color: var(--color-text-secondary);
 }
 
 // ── Segmented control (ALL/ANY, AND/OR) — no DS equivalent ────────────────────
@@ -208,9 +222,8 @@
     &:focus-visible { box-shadow: 0 0 0 3px var(--color-border-ada-focus-ring); }
 
     &.is-selected {
-      background: var(--color-surface-default);
-      color: var(--color-text-brand);
-      box-shadow: var(--shadow-elevation-1);
+      background: var(--color-surface-brand-bold);
+      color: var(--color-text-on-brand);
     }
   }
 }
@@ -243,15 +256,9 @@
   }
 
   &__num {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
-    border-radius: var(--radius-full);
-    background: var(--color-surface-brand);
+    @include ds.type-title-h4;
+    font-variant-numeric: tabular-nums;
     color: var(--color-text-brand);
-    @include ds.type-label-small;
     flex-shrink: 0;
   }
 
@@ -304,26 +311,8 @@
   }
 }
 
-// ── Mini empty state (inline section hint) ────────────────────────────────────
-.wf-mini-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-xl);
-  border: 1px dashed var(--color-border-subtle);
-  border-radius: var(--radius-md);
-
-  &__icon { color: var(--color-icon-disabled); font-size: 28px; }
-  &__title { @include ds.type-label-medium; color: var(--color-text-primary); }
-  &__hint {
-    @include ds.type-body-small;
-    color: var(--color-text-secondary);
-    max-width: 380px;
-  }
-  .ds-button { margin-top: var(--spacing-sm); }
-}
+// ── Empty state (unified ds-empty-state inside a section body) ─────────────────
+.wf-empty { padding-block: var(--spacing-lg); }
 
 // ── Action picker (ds-menu) ───────────────────────────────────────────────────
 .wf-action-picker-anchor { position: relative; }
@@ -345,7 +334,7 @@
 .wf-action-card {
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
-  background: var(--color-surface-default);
+  background: var(--color-surface-subtle);
   overflow: hidden;
 
   &.is-error { border-color: var(--color-border-error); }
@@ -366,11 +355,9 @@
 
   &__index {
     flex-shrink: 0;
-    @include ds.type-label-small;
-    color: var(--color-text-secondary);
+    @include ds.type-title-h4;
     font-variant-numeric: tabular-nums;
-    width: 16px;
-    text-align: center;
+    color: var(--color-text-brand);
   }
 
   &__icon {
@@ -434,15 +421,13 @@
     color: var(--color-icon-brand);
   }
 
+  &__icon { color: var(--color-icon-error); }
   &__text { flex: 1 1 auto; }
   &__title { @include ds.type-label-medium; color: var(--color-text-primary); }
   &__sub { @include ds.type-body-small; color: var(--color-text-secondary); }
 }
 
 // ── Save bar ──────────────────────────────────────────────────────────────────
-.wf-save-bar-wrap {
-  flex-shrink: 0;
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-top: 1px solid var(--color-border-subtle);
-  background: var(--color-surface-default);
-}
+// Canonical ds-save-bar markup carries its own surface, border, and padding.
+// As a direct child of ds-page-content it pins below the scrolling canvas.
+.ds-save-bar { flex-shrink: 0; }

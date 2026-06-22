@@ -4,54 +4,74 @@
 // DS: inner-page-tabs (scenarios), alert (banner), metric-card (metrics),
 // empty-state, buttons. Bespoke + tokenized: outcome timeline + preview cards.
 
-:host { display: block; height: 100%; min-height: 0; }
+:host { display: flex; flex-direction: column; gap: 0; height: 100%; min-height: 0; }
 
 .wf-sim-main {
   padding: 0;
-  height: 100%;
+  flex: 1 1 auto;
   min-height: 0;
   background: transparent;
   box-shadow: none;
   border-radius: 0;
-  overflow: hidden;
+  overflow: visible; // let .wf-sim's drop-shadow canvas bleed past the scroll area
+  display: flex;
+  flex-direction: column;
 }
 
 .wf-sim {
-  height: 100%;
+  flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
-  padding: var(--spacing-lg);
+  // Negative-margin canvas: pad L/R so drop-shadows have room inside the scroll
+  // clip, then pull back the same amount so content edges stay exactly flush.
+  padding: var(--spacing-lg) var(--spacing-sm);
+  margin: 0 calc(-1 * var(--spacing-sm));
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
+
+  // DS scrollbar — thin, thumb uses --color-surface-scroll (never hardcode)
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-surface-scroll) transparent;
+  &::-webkit-scrollbar { width: 8px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-surface-scroll);
+    border-radius: var(--radius-full);
+  }
 }
 
-// ── Header ─────────────────────────────────────────────────────────────────
-.wf-sim-header {
-  &__crumbs {
-    @include ds.type-body-small;
-    color: var(--color-text-secondary);
-  }
-  &__row {
+// ── Heading (DS ds-page-content__heading--row) ───────────────────────────────
+.wf-sim-heading {
+  &__bar {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: var(--spacing-md);
-    margin-top: var(--spacing-xs);
   }
-  &__title { @include ds.type-title-h2; margin: 0; color: var(--color-text-primary); }
-  &__meta {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    @include ds.type-body-small;
-    color: var(--color-text-secondary);
+
+  &__lead {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    min-width: 0;
+
+    // The DS title carries padding-left: var(--spacing-lg); match it so the
+    // subtext's left edge lines up with the title text.
+    .ds-page-content__meta { margin: 0; padding: 0 0 0 var(--spacing-lg); }
   }
   &__sep { color: var(--color-text-tertiary, var(--color-text-secondary)); }
-  &__spacer { flex: 1 1 auto; }
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-shrink: 0;
+  }
 }
 
-// ── Scenario tabs (DS inner-page-tabs) ────────────────────────────────────────
-.wf-sim-scenarios { flex-wrap: wrap; }
+// ── Scenario tabs (DS page tabs, in heading) ────────────────────────────────────────
+.wf-sim-scenarios { flex-wrap: nowrap; } // page tabs stay on one row
 
 // ── Banner (DS alert) ─────────────────────────────────────────────────────────
 .wf-sim-banner { width: 100%; }
@@ -75,20 +95,7 @@
   color: var(--color-text-primary);
 }
 
-.wf-status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  width: fit-content;
-  padding: 2px var(--spacing-sm);
-  border-radius: var(--radius-full);
-  @include ds.type-label-small;
-  background: var(--color-surface-subtle);
-  color: var(--color-text-secondary);
-  &[data-status="matched"] { background: var(--color-surface-success); color: var(--color-text-success); }
-  &[data-status="skipped"] { background: var(--color-surface-subtle); color: var(--color-text-secondary); }
-  &[data-status="not-evaluated"] { background: var(--color-surface-subtle); color: var(--color-text-disabled, var(--color-text-secondary)); }
-}
+.wf-status-badge { flex-shrink: 0; } // layout hook only — visual styling comes from the DS label
 
 .wf-cond-rule {
   display: flex;
@@ -98,8 +105,8 @@
   padding: 4px 0;
   @include ds.type-body-small;
 
-  .ds-icon.is-pass { color: var(--color-text-success); }
-  .ds-icon.is-fail { color: var(--color-text-error); }
+  .ds-icon.is-pass { color: var(--color-icon-success); }
+  .ds-icon.is-fail { color: var(--color-icon-error); }
 
   &__field { font-weight: var(--ref-typescale-body-small-weight-prominent); }
   &__op { color: var(--color-text-secondary); }
@@ -137,9 +144,11 @@
 }
 
 .wf-sim-card {
-  border: 1px solid var(--color-border-subtle);
+  border: 1px solid transparent; // DS elevated variant: no visible border, shadow defines the edge
   border-radius: var(--radius-md);
-  background: var(--color-surface-default);
+  background: var(--color-surface-page);
+  // DS elevation 1 — token is a color; build the double shadow from it (scaled from the DS elevation-3 recipe)
+  box-shadow: 0 1px 4px 2px var(--shadow-elevation-1), 0 2px 2px 0 var(--shadow-elevation-1);
   overflow: hidden;
 
   &.is-matched { border-left: 3px solid var(--color-text-success); }
@@ -213,13 +222,6 @@
     align-items: center;
     gap: var(--spacing-sm);
   }
-  &__cond-mode {
-    @include ds.type-label-small;
-    padding: 0 6px;
-    border-radius: var(--radius-sm);
-    background: var(--color-surface-brand);
-    color: var(--color-text-brand);
-  }
   &__none { @include ds.type-body-small; color: var(--color-text-secondary); font-style: italic; }
 }
 
@@ -233,15 +235,28 @@
 .wf-sim-action {
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
-  background: var(--color-surface-default);
+  background: var(--color-surface-subtle);
   padding: var(--spacing-sm) var(--spacing-md);
 
   > header {
     display: flex;
     align-items: center;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-sm);
     @include ds.type-label-medium;
     color: var(--color-text-primary);
+
+    // Action glyph as a tinted chip — a scannable, colorful anchor per action.
+    > .ds-icon {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-sm);
+      background: var(--color-surface-brand);
+      color: var(--color-text-brand);
+    }
   }
 
   &__target { @include ds.type-body-small; font-weight: 400; color: var(--color-text-secondary); margin-left: auto; }
@@ -249,12 +264,30 @@
   &__diff {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: var(--spacing-sm);
-    margin-top: var(--spacing-xs);
+    margin-top: var(--spacing-sm);
     @include ds.type-body-small;
+
+    .ds-icon { color: var(--color-icon-secondary); } // the → arrow, kept muted
   }
-  &__before { color: var(--color-text-secondary); text-decoration: line-through; }
-  &__after { color: var(--color-text-success); font-weight: var(--ref-typescale-body-small-weight-prominent); }
+  // Old value (struck) → new value, shown as filled pills with an outline so the change reads at a glance.
+  &__before {
+    color: var(--color-text-secondary);
+    text-decoration: line-through;
+    background: var(--color-surface-subtle);
+    border: 1px solid var(--color-border-input);
+    padding: 1px var(--spacing-sm);
+    border-radius: var(--radius-full);
+  }
+  &__after {
+    color: var(--color-text-success);
+    font-weight: var(--ref-typescale-body-small-weight-prominent);
+    background: var(--color-surface-success);
+    border: 1px solid var(--color-border-success, var(--color-text-success));
+    padding: 1px var(--spacing-sm);
+    border-radius: var(--radius-full);
+  }
 
   &__resolved {
     @include ds.type-body-small;
@@ -266,11 +299,22 @@
   &__body-text {
     @include ds.type-body-small;
     color: var(--color-text-secondary);
-    margin: var(--spacing-xs) 0 0;
+    margin: var(--spacing-sm) 0 0;
   }
 
   &--email { background: var(--color-surface-subtle); }
-  &--failing { border-color: var(--color-border-warning, var(--color-border-subtle)); background: var(--color-surface-warning); }
+  &--failing {
+    border-color: var(--color-border-warning, var(--color-border-subtle));
+    background: var(--color-surface-warning);
+
+    // amber box already signals failure — keep the glyph a plain warning icon, no brand chip
+    > header > .ds-icon {
+      width: auto;
+      height: auto;
+      background: transparent;
+      color: var(--color-text-warning);
+    }
+  }
   &__failing-reason {
     @include ds.type-body-small;
     color: var(--color-text-warning);

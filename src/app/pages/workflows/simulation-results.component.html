@@ -1,46 +1,43 @@
 <div class="ds-page-content__heading wf-sim-heading">
-  <h1 class="ds-page-content__title ds-sr-only">Simulation results</h1>
+  <div class="wf-sim-heading__bar">
+    <div class="wf-sim-heading__lead">
+      <h1 class="ds-page-content__title">Simulation results</h1>
+      <span class="ds-page-content__meta">
+        Tickets · Ticket Created
+        <span class="wf-sim-heading__sep">·</span>
+        <span class="wf-mono-token">{{ recordId() }}</span>
+        <span class="wf-sim-heading__sep">·</span>
+        {{ durationMs() }} ms
+      </span>
+    </div>
+    <div class="wf-sim-heading__actions">
+      <button class="ds-button ds-button--filled ds-button--sm ds-button--leading-icon"
+              type="button" (click)="runAgain()">
+        <span class="ds-icon" aria-hidden="true">replay</span>
+        Run again
+      </button>
+      <button class="ds-button ds-button--outlined ds-button--sm" type="button" (click)="close()">Close</button>
+    </div>
+  </div>
+
+  <!-- Scenario picker (page tabs) -->
+  <div class="ds-tabs wf-sim-scenarios" role="tablist" aria-label="Scenario">
+    @for (s of scenarios; track s.id; let i = $index) {
+      <button type="button"
+              class="ds-tabs__tab"
+              role="tab"
+              [class.is-selected]="scenarioIdx() === i"
+              [attr.aria-selected]="scenarioIdx() === i"
+              [attr.tabindex]="scenarioIdx() === i ? 0 : -1"
+              (click)="pickScenario(i)">
+        {{ s.label }}
+      </button>
+    }
+  </div>
 </div>
 
 <div class="ds-page-content__main wf-sim-main">
   <div class="wf-sim">
-
-    <!-- Page header -->
-    <header class="wf-sim-header">
-      <div class="wf-sim-header__crumbs">
-        Workflows · Tickets · Ticket Created · Simulation results
-      </div>
-      <div class="wf-sim-header__row">
-        <h2 class="wf-sim-header__title">Simulation results</h2>
-        <div class="wf-sim-header__meta">
-          <span class="wf-mono-token">{{ recordId() }}</span>
-          <span class="wf-sim-header__sep">·</span>
-          <span class="wf-sim-header__duration">{{ durationMs() }} ms</span>
-        </div>
-        <div class="wf-sim-header__spacer"></div>
-        <button class="ds-button ds-button--outlined ds-button--sm ds-button--leading-icon"
-                type="button" (click)="runAgain()">
-          <span class="ds-icon" aria-hidden="true">replay</span>
-          Run again
-        </button>
-        <button class="ds-button ds-button--text ds-button--sm" type="button" (click)="close()">Close</button>
-      </div>
-    </header>
-
-    <!-- Scenario picker -->
-    <div class="ds-inner-page-tabs wf-sim-scenarios" role="tablist" aria-label="Scenario">
-      @for (s of scenarios; track s.id; let i = $index) {
-        <button type="button"
-                class="ds-inner-page-tabs__tab"
-                role="tab"
-                [class.is-selected]="scenarioIdx() === i"
-                [attr.aria-selected]="scenarioIdx() === i"
-                [attr.tabindex]="scenarioIdx() === i ? 0 : -1"
-                (click)="pickScenario(i)">
-          {{ s.label }}
-        </button>
-      }
-    </div>
 
     <!-- Simulation banner -->
     <div class="ds-alert ds-alert--info wf-sim-banner" role="note">
@@ -142,14 +139,11 @@
                     </div>
                   }
                 </div>
-                <span class="wf-status-badge" [attr.data-status]="c.wf.status">
-                  <span class="ds-icon ds-icon--sm" aria-hidden="true">
-                    @switch (c.wf.status) {
-                      @case ('matched') { check_circle }
-                      @case ('skipped') { remove_circle_outline }
-                      @case ('not-evaluated') { do_not_disturb_on }
-                    }
-                  </span>
+                <span class="ds-label ds-label--xs ds-label--pill ds-label--has-dot wf-status-badge"
+                      [class.ds-label--green]="c.wf.status === 'matched'"
+                      [class.ds-label--grey]="c.wf.status === 'skipped'"
+                      [class.ds-label--disabled]="c.wf.status === 'not-evaluated'">
+                  <span class="ds-label__dot" aria-hidden="true"></span>
                   @switch (c.wf.status) {
                     @case ('matched') { Matched }
                     @case ('skipped') { Skipped }
@@ -177,19 +171,19 @@
                       <div class="wf-sim-card__section-label">
                         Conditions · {{ c.wf.conditionsSummary }}
                         @if (c.wf.conditionGroupMode) {
-                          <span class="wf-sim-card__cond-mode">{{ c.wf.conditionGroupMode }}</span>
+                          <span class="ds-label ds-label--xs ds-label--pill ds-label--brand">{{ c.wf.conditionGroupMode }}</span>
                         }
                       </div>
                       <div class="wf-sim-cond-list">
                         @for (cnd of c.wf.conditions; track $index) {
                           <div class="wf-cond-rule" [class.is-fail]="!cnd.pass">
-                            <span class="ds-icon ds-icon--sm" aria-hidden="true"
+                            <span class="ds-icon ds-icon--sm ds-icon--filled" aria-hidden="true"
                                   [class.is-pass]="cnd.pass" [class.is-fail]="!cnd.pass">
                               {{ cnd.pass ? 'check_circle' : 'cancel' }}
                             </span>
                             <span class="wf-cond-rule__field">{{ cnd.field }}</span>
                             <span class="wf-cond-rule__op">{{ cnd.operator }}</span>
-                            <span class="wf-mono-token">{{ cnd.value }}</span>
+                            <span class="ds-label ds-label--xs ds-label--pill ds-label--blue">{{ cnd.value }}</span>
                             @if (cnd.actual !== undefined) {
                               <span class="wf-cond-rule__actual" [class.is-fail]="!cnd.pass">
                                 <span class="wf-cond-rule__actual-label">actual:</span>
@@ -212,7 +206,7 @@
                           @if (asDiff(a); as d) {
                             <div class="wf-sim-action">
                               <header>
-                                <span class="ds-icon ds-icon--sm" aria-hidden="true">{{ d.icon }}</span>
+                                <span class="ds-icon ds-icon--sm ds-icon--filled" aria-hidden="true">{{ d.icon }}</span>
                                 <span>{{ d.title }}</span>
                               </header>
                               <div class="wf-sim-action__diff">
@@ -230,7 +224,7 @@
                           @if (asComment(a); as cmt) {
                             <div class="wf-sim-action">
                               <header>
-                                <span class="ds-icon ds-icon--sm" aria-hidden="true">chat</span>
+                                <span class="ds-icon ds-icon--sm ds-icon--filled" aria-hidden="true">chat</span>
                                 <span>{{ cmt.visibility === 'internal' ? 'Internal comment' : 'Public comment' }}</span>
                               </header>
                               <p class="wf-sim-action__body-text">{{ cmt.body }}</p>
@@ -239,7 +233,7 @@
                           @if (asEmail(a); as em) {
                             <div class="wf-sim-action wf-sim-action--email">
                               <header>
-                                <span class="ds-icon ds-icon--sm" aria-hidden="true">send</span>
+                                <span class="ds-icon ds-icon--sm ds-icon--filled" aria-hidden="true">send</span>
                                 <span>Send email</span>
                               </header>
                               <div class="wf-sim-email">
@@ -274,7 +268,7 @@
                           @if (asCreateTicket(a); as ct) {
                             <div class="wf-sim-action">
                               <header>
-                                <span class="ds-icon ds-icon--sm" aria-hidden="true">add_box</span>
+                                <span class="ds-icon ds-icon--sm ds-icon--filled" aria-hidden="true">add_box</span>
                                 <span>Create ticket</span>
                               </header>
                               <div class="wf-sim-create-ticket">

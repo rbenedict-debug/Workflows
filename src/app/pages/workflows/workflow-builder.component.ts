@@ -1,6 +1,9 @@
 import { Component, HostListener, computed, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TRIGGERS, TRIGGER_ICONS, workflowById, type Workflow } from './workflow-data';
+import { WfAnchoredDirective } from './anchored.directive';
+import { WfTextareaResizeDirective } from './textarea-resize.directive';
+import { NgTemplateOutlet } from '@angular/common';
 
 interface BuilderRule {
   id: string;
@@ -47,6 +50,7 @@ const TAG_SUGGESTIONS = ['Routing','Priority','Notification','SLA','Customer','P
 @Component({
   selector: 'app-workflow-builder',
   standalone: true,
+  imports: [WfAnchoredDirective, WfTextareaResizeDirective, NgTemplateOutlet],
   templateUrl: './workflow-builder.component.html',
   styleUrl: './workflow-builder.component.scss',
   host: { class: 'ds-page-content', role: 'main' },
@@ -66,9 +70,14 @@ export class WorkflowBuilderComponent {
     if (s.actions.some(a => a.hasError)) return true;
     return false;
   });
+  // Validation is only surfaced once the user attempts to save.
+  showErrors = signal<boolean>(false);
+  nameError = computed<boolean>(() => this.showErrors() && !this.wf().name.trim());
+  saveBarError = computed<boolean>(() => this.showErrors() && this.hasErrors());
   totalConditions = computed<number>(() =>
     this.wf().conditions.groups.reduce((n, g) => n + g.rules.length, 0)
   );
+  isEditing = computed<boolean>(() => !!this.wf().id);
 
   pickerOpen = signal<boolean>(false);
   tagDraft = signal<string>('');
@@ -155,6 +164,8 @@ export class WorkflowBuilderComponent {
   setName(v: string)        { this.patch({ name: v }); }
   setDescription(v: string) { this.patch({ description: v }); }
   setExpiresAt(v: string)   { this.patch({ expiresAt: v }); }
+  openDatePicker(el: HTMLInputElement): void { el.showPicker?.(); }
+  pad2(n: number): string { return String(n).padStart(2, '0'); }
   setActive(v: boolean)     { this.patch({ active: v }); }
   setStopAfter(v: boolean)  { this.patch({ stopAfter: v }); }
 
@@ -309,14 +320,18 @@ export class WorkflowBuilderComponent {
   // Save
   cancelChanges(): void {
     this.wf.set(JSON.parse(this.initialSnapshot()));
+    this.showErrors.set(false);
   }
 
   saveProgress(): void {
+    if (this.hasErrors()) { this.showErrors.set(true); return; }
     // TODO eng: persist to OnfloStore.save(wf)
     this.initialSnapshot.set(JSON.stringify(this.wf()));
+    this.showErrors.set(false);
   }
 
   saveAndExit(): void {
+    if (this.hasErrors()) { this.showErrors.set(true); return; }
     // TODO eng: persist then nav
     this.router.navigate(['/workflows']);
   }

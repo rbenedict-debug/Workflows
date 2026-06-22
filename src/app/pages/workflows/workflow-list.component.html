@@ -2,11 +2,10 @@
   <h1 class="ds-page-content__title">Workflows</h1>
 </div>
 
-<div class="ds-page-content__main wf-list-main">
-  <div class="wf-list">
+<div class="ds-split-page ds-split-page--2575">
 
-    <!-- Left rail -->
-    <aside class="wf-list__rail">
+  <!-- Left panel: category + triggers -->
+  <div class="ds-split-page__panel ds-split-page__panel--left">
       <section class="wf-rail-panel">
         <div class="wf-rail-panel__title">Category</div>
         <div class="wf-rail-panel__body">
@@ -16,50 +15,54 @@
                     [class.is-selected]="categoryId() === c.id"
                     [attr.aria-pressed]="categoryId() === c.id"
                     (click)="pickCategory(c.id)">
-              <span class="ds-icon ds-icon--sm wf-rail-row__icon" aria-hidden="true">{{ c.icon }}</span>
+              <span class="ds-icon ds-icon--sm wf-rail-row__icon" [class.ds-icon--filled]="c.id === 'tickets'" aria-hidden="true">{{ c.icon }}</span>
               <span class="wf-rail-row__label">{{ c.label }}</span>
             </button>
           }
         </div>
       </section>
 
+      <hr class="ds-divider ds-divider--middle-inset" />
+
       <section class="wf-rail-panel wf-rail-panel--scroll">
         <div class="wf-rail-panel__title">Triggers</div>
         <div class="wf-rail-panel__body">
           @for (t of triggers(); track t.id) {
+            @let count = countFor(categoryId(), t.id);
             <button type="button"
                     class="wf-rail-row"
                     [class.is-selected]="triggerId() === t.id"
                     [attr.aria-pressed]="triggerId() === t.id"
                     (click)="pickTrigger(t.id)">
               <span class="wf-rail-row__label">{{ t.label }}</span>
-              <span class="ds-label ds-label--grey ds-label--xs ds-label--pill wf-rail-row__count">{{ countFor(categoryId(), t.id) }}</span>
+              @if (count > 0) {
+                <span class="ds-badge-indicator wf-rail-row__count"
+                      [class.ds-badge-indicator--blue]="triggerId() === t.id"
+                      [class.ds-badge-indicator--grey]="triggerId() !== t.id">{{ count }}</span>
+              }
             </button>
           }
         </div>
       </section>
-    </aside>
+    </div>
 
-    <!-- List pane -->
-    <section class="wf-list__pane">
+    <!-- Right panel: workflows -->
+    <div class="ds-split-page__panel ds-split-page__panel--right">
 
       <!-- Header -->
       <header class="wf-list-header">
-        <button class="ds-button ds-button--filled ds-button--sm ds-button--leading-icon"
+        <button class="ds-button ds-button--filled ds-button--md ds-button--leading-icon"
                 type="button"
                 (click)="openBuilder({ new: 1, category: categoryId(), trigger: trigger().id })">
           <span class="ds-icon" aria-hidden="true">add</span>
           Add Workflow
         </button>
-        <button class="ds-button ds-button--outlined ds-button--sm ds-button--leading-icon"
+        <button class="ds-button ds-button--outlined ds-button--md ds-button--leading-icon"
                 type="button"
                 (click)="openTestRun()">
-          <span class="ds-icon" aria-hidden="true">play_arrow</span>
-          Test Run Trigger
+          <span class="ds-icon ds-icon--filled" aria-hidden="true">play_arrow</span>
+          Test Run
         </button>
-        <span class="wf-list-header__breadcrumb">
-          {{ category().label }} › {{ trigger().label }}
-        </span>
         <div class="ds-input ds-search wf-list-header__search" role="search">
           <div class="ds-input__field">
             <span class="ds-icon ds-icon--sm ds-input__icon" aria-hidden="true">search</span>
@@ -81,6 +84,8 @@
 
       <!-- Toolbar -->
       <div class="wf-list-toolbar">
+        <span class="wf-list-toolbar__context">{{ category().label }} › {{ trigger().label }}</span>
+        <div class="wf-list-toolbar__divider" aria-hidden="true"></div>
         <span class="wf-list-toolbar__count">
           @if (filtered().length === allWorkflows().length) {
             {{ filtered().length }} workflow{{ filtered().length === 1 ? '' : 's' }}
@@ -107,14 +112,12 @@
 
         <div class="wf-list-toolbar__spacer"></div>
 
-        <label class="ds-toggle wf-collapse-toggle">
-          <input type="checkbox" role="switch" class="ds-toggle__control"
-                 [checked]="collapseAll()"
-                 (change)="toggleCollapseAll($any($event.target).checked)"
-                 aria-label="Collapse all workflows" />
-          <span class="ds-toggle__track"><span class="ds-toggle__thumb"></span></span>
-          <span class="ds-toggle__label">Collapse all</span>
-        </label>
+        <button class="ds-button ds-button--text ds-button--sm ds-button--leading-icon"
+                type="button"
+                (click)="toggleCollapseAll(!collapseAll())">
+          <span class="ds-icon" aria-hidden="true">{{ collapseAll() ? 'unfold_more' : 'unfold_less' }}</span>
+          {{ collapseAll() ? 'Expand all' : 'Collapse all' }}
+        </button>
       </div>
 
       <!-- Stream -->
@@ -156,24 +159,40 @@
         } @else {
           <div class="wf-cards">
             @for (wf of visible(); track wf.id; let i = $index) {
-              <article class="wf-card" [class.is-disabled]="wf.disabled">
-                <!-- Left rail: position number + drag handle -->
-                <div class="wf-card__rail">
-                  <div class="wf-card__number">{{ positionLabel(i) }}</div>
-                  <span class="ds-icon wf-card__drag" aria-hidden="true"
-                        [class.is-disabled]="searchActive()">drag_indicator</span>
-                </div>
+              <article class="wf-card"
+                       [class.is-disabled]="wf.disabled"
+                       [class.is-dragging]="draggedId() === wf.id"
+                       [class.is-drag-over]="dragOverId() === wf.id && draggedId() !== wf.id"
+                       [draggable]="armedId() === wf.id"
+                       (dragstart)="onDragStart($event, wf.id)"
+                       (drag)="onDrag($event)"
+                       (dragover)="onDragOver($event, wf.id)"
+                       (drop)="onDrop($event, wf.id)"
+                       (dragend)="endDrag()">
+                <!-- Left-edge drag strip (the grab target) -->
+                <button type="button" class="wf-card__grip"
+                        aria-label="Drag to reorder workflow"
+                        [disabled]="searchActive()"
+                        (mousedown)="armDrag(wf.id)"
+                        (mouseup)="endDrag()">
+                  <span class="ds-icon ds-icon--sm" aria-hidden="true">drag_indicator</span>
+                </button>
 
                 <div class="wf-card__body">
                   <div class="wf-card__head">
                     <div class="wf-card__title-row">
-                      <h3 class="wf-card__name">{{ wf.name }}</h3>
-                      @for (t of wf.tags; track t) {
-                        <span class="ds-label ds-label--grey ds-label--sm">{{ t }}</span>
+                      @if (!wf.disabled) {
+                        <span class="wf-card__number">{{ executionNumber(wf) }}</span>
                       }
                       @if (wf.disabled) {
-                        <span class="ds-label ds-label--disabled ds-label--sm ds-label--pill ds-label--has-dot">
+                        <span class="ds-label ds-label--grey ds-label--outline ds-label--xs ds-label--pill ds-label--has-dot wf-card__status">
                           <span class="ds-label__dot" aria-hidden="true"></span>Disabled
+                        </span>
+                      }
+                      <h3 class="wf-card__name">{{ wf.name }}</h3>
+                      @for (t of wf.tags; track t) {
+                        <span class="ds-tag ds-tag--sm">
+                          <span class="ds-tag__label">{{ t }}</span>
                         </span>
                       }
                     </div>
@@ -232,19 +251,18 @@
                       }
                     </div>
                   </div>
-                </div>
 
-                @if (!isCollapsed(wf.id)) {
+                  @if (!isCollapsed(wf.id)) {
                   <div class="wf-card__detail">
                     @for (c of wf.conditions; track $index; let ci = $index) {
                       <div class="wf-clause" [class.is-indented]="ci > 0">
                         <span class="wf-clause__icon">
                           @if (ci === 0) {
-                            <span class="ds-icon ds-icon--sm" aria-hidden="true">filter_alt</span>
+                            <span class="ds-icon ds-icon--sm ds-icon--filled" aria-hidden="true">filter_alt</span>
                           }
                         </span>
                         <span class="wf-clause__kind">{{ ci === 0 ? 'WHEN' : 'AND' }}</span>
-                        <span class="ds-label ds-label--grey ds-label--xs wf-clause__field">{{ c.field }}</span>
+                        <span class="ds-label ds-label--blue ds-label--outline ds-label--pill ds-label--xs wf-clause__field">{{ c.field }}</span>
                         <span class="wf-clause__operator">{{ c.operator }}</span>
                         <span class="wf-clause__value">{{ c.value }}</span>
                       </div>
@@ -252,7 +270,7 @@
                     @for (a of wf.actions; track $index; let ai = $index) {
                       <div class="wf-clause" [class.is-indented]="ai > 0">
                         <span class="wf-clause__icon">
-                          <span class="ds-icon ds-icon--sm" aria-hidden="true">play_arrow</span>
+                          <span class="ds-icon ds-icon--sm ds-icon--filled" aria-hidden="true">play_arrow</span>
                         </span>
                         <span class="wf-clause__kind">THEN</span>
                         <span class="wf-clause__text">
@@ -263,14 +281,15 @@
                     @if (wf.stop) {
                       <div class="wf-clause is-stop">
                         <span class="wf-clause__icon">
-                          <span class="ds-icon ds-icon--sm" aria-hidden="true">pause</span>
+                          <span class="ds-icon ds-icon--sm ds-icon--filled" aria-hidden="true">pause</span>
                         </span>
                         <span class="wf-clause__kind">STOP</span>
                         <span class="wf-clause__text">Don’t execute any more workflows</span>
                       </div>
                     }
                   </div>
-                }
+                  }
+                </div>
               </article>
             }
           </div>
@@ -278,47 +297,58 @@
       </div>
 
       <!-- Footer / pagination -->
-      <footer class="wf-list-footer">
-        <div class="wf-list-footer__group">
-          <span>Show</span>
-          <select class="ds-paginator__select"
-                  [value]="perPage()"
-                  (change)="setPerPage(+$any($event.target).value)"
-                  aria-label="Workflows per page">
-            @for (n of [10, 25, 50, 100]; track n) {
-              <option [value]="n">{{ n }}</option>
-            }
-          </select>
-          <span>per page</span>
+      <div class="ds-ag-paginator">
+        <div class="ds-ag-paginator__inner">
+          <div class="ds-ag-paginator__counter">
+            <span class="ds-ag-paginator__label">Items per page:</span>
+            <!-- TODO eng: replace native select with ds-select wired to AG Grid pageSize -->
+            <select class="ds-paginator__select"
+                    [value]="perPage()"
+                    (change)="setPerPage(+$any($event.target).value)"
+                    aria-label="Workflows per page">
+              @for (n of [10, 25, 50, 100]; track n) {
+                <option [value]="n">{{ n }}</option>
+              }
+            </select>
+          </div>
+          <div class="ds-ag-paginator__pagination">
+            <span class="ds-ag-paginator__range" aria-live="polite">
+              @if (filtered().length === 0) {
+                0 of 0
+              } @else {
+                {{ start() + 1 }} – {{ end() }} of {{ filtered().length }}
+              }
+            </span>
+            <div class="ds-ag-paginator__nav">
+              <button type="button" class="ds-icon-button ds-icon-button--icon"
+                      aria-label="First page"
+                      [disabled]="safePage() <= 1"
+                      (click)="setPage(1)">
+                <span class="ds-icon" aria-hidden="true">first_page</span>
+              </button>
+              <button type="button" class="ds-icon-button ds-icon-button--icon"
+                      aria-label="Previous page"
+                      [disabled]="safePage() <= 1"
+                      (click)="setPage(safePage() - 1)">
+                <span class="ds-icon" aria-hidden="true">keyboard_arrow_left</span>
+              </button>
+              <button type="button" class="ds-icon-button ds-icon-button--icon"
+                      aria-label="Next page"
+                      [disabled]="safePage() >= totalPages()"
+                      (click)="setPage(safePage() + 1)">
+                <span class="ds-icon" aria-hidden="true">keyboard_arrow_right</span>
+              </button>
+              <button type="button" class="ds-icon-button ds-icon-button--icon"
+                      aria-label="Last page"
+                      [disabled]="safePage() >= totalPages()"
+                      (click)="setPage(totalPages())">
+                <span class="ds-icon" aria-hidden="true">last_page</span>
+              </button>
+            </div>
+          </div>
         </div>
-        <div class="wf-list-footer__divider"></div>
-        <span class="wf-list-footer__range">
-          @if (filtered().length === 0) {
-            0 of 0
-          } @else {
-            {{ start() + 1 }}–{{ end() }} of {{ filtered().length }}
-          }
-        </span>
-        <div class="wf-list-footer__nav">
-          <button type="button"
-                  class="ds-icon-button ds-icon-button--icon ds-icon-button--sm"
-                  aria-label="Previous page"
-                  [disabled]="safePage() <= 1"
-                  (click)="setPage(safePage() - 1)">
-            <span class="ds-icon" aria-hidden="true">chevron_left</span>
-          </button>
-          <span class="wf-list-footer__pageno">Page {{ safePage() }} of {{ totalPages() }}</span>
-          <button type="button"
-                  class="ds-icon-button ds-icon-button--icon ds-icon-button--sm"
-                  aria-label="Next page"
-                  [disabled]="safePage() >= totalPages()"
-                  (click)="setPage(safePage() + 1)">
-            <span class="ds-icon" aria-hidden="true">chevron_right</span>
-          </button>
-        </div>
-      </footer>
-    </section>
-  </div>
+      </div>
+    </div>
 </div>
 
 <!-- Test Run dialog -->
@@ -351,24 +381,43 @@
         }
 
         @if (testPhase() === 'result' && testResult(); as r) {
-          <div class="wf-test-banner">
-            <span class="ds-icon ds-icon--sm" aria-hidden="true">check_circle</span>
-            Trigger fired in {{ r.durationMs }}ms
-          </div>
-          <div class="wf-test-stats">
-            <div class="wf-test-stat">
-              <div class="wf-test-stat__value">{{ r.evaluated }}</div>
-              <div class="wf-test-stat__label">Evaluated</div>
+          @if (r.ok) {
+            <div class="ds-alert ds-alert--success" role="alert">
+              <div class="ds-alert__header">
+                <span class="ds-icon ds-alert__icon" aria-hidden="true">check_circle</span>
+                <div class="ds-alert__content">
+                  <div class="ds-alert__text">
+                    <p class="ds-alert__message">Trigger fired in {{ r.durationMs }}ms.</p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="wf-test-stat">
-              <div class="wf-test-stat__value">{{ r.matched }}</div>
-              <div class="wf-test-stat__label">Matched</div>
+            <div class="wf-test-stats">
+              <div class="wf-test-stat">
+                <div class="wf-test-stat__value">{{ r.evaluated }}</div>
+                <div class="wf-test-stat__label">Evaluated</div>
+              </div>
+              <div class="wf-test-stat">
+                <div class="wf-test-stat__value">{{ r.matched }}</div>
+                <div class="wf-test-stat__label">Matched</div>
+              </div>
+              <div class="wf-test-stat">
+                <div class="wf-test-stat__value">{{ r.skipped }}</div>
+                <div class="wf-test-stat__label">Skipped</div>
+              </div>
             </div>
-            <div class="wf-test-stat">
-              <div class="wf-test-stat__value">{{ r.skipped }}</div>
-              <div class="wf-test-stat__label">Skipped</div>
+          } @else {
+            <div class="ds-alert ds-alert--error" role="alert">
+              <div class="ds-alert__header">
+                <span class="ds-icon ds-alert__icon" aria-hidden="true">error</span>
+                <div class="ds-alert__content">
+                  <div class="ds-alert__text">
+                    <p class="ds-alert__message">{{ r.error }}</p>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          }
           <div class="wf-test-record-line">
             Sample record: <code>{{ r.recordId }}</code>
           </div>
@@ -383,25 +432,56 @@
                   type="button"
                   [disabled]="testPhase() === 'running'"
                   (click)="closeTestRun()">Cancel</button>
-          <button class="ds-button ds-button--filled ds-button--md ds-button--leading-icon"
+          <button class="ds-button ds-button--filled ds-button--md"
                   type="button"
                   [disabled]="testPhase() === 'running' || !testRecordId().trim() || allWorkflows().length === 0"
                   (click)="runTest()">
-            <span class="ds-icon" aria-hidden="true">
-              {{ testPhase() === 'running' ? 'progress_activity' : 'play_arrow' }}
-            </span>
-            {{ testPhase() === 'running' ? 'Running…' : 'Run test' }}
+            {{ testPhase() === 'running' ? 'Running…' : 'Run' }}
           </button>
         } @else {
           <button class="ds-button ds-button--text ds-button--md" type="button"
                   (click)="runTestAgain()">Run again</button>
-          <button class="ds-button ds-button--filled ds-button--md ds-button--leading-icon"
-                  type="button"
-                  (click)="openSimulation()">
-            <span class="ds-icon" aria-hidden="true">arrow_forward</span>
-            View results
-          </button>
+          @if (testResult()?.ok) {
+            <button class="ds-button ds-button--filled ds-button--md ds-button--leading-icon"
+                    type="button"
+                    (click)="openSimulation()">
+              <span class="ds-icon" aria-hidden="true">arrow_forward</span>
+              View results
+            </button>
+          } @else {
+            <button class="ds-button ds-button--filled ds-button--md"
+                    type="button"
+                    (click)="closeTestRun()">Close</button>
+          }
         }
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Delete confirmation dialog -->
+@if (deleteTarget(); as wf) {
+  <div class="ds-dialog-backdrop wf-dialog-backdrop" (click)="cancelDelete()">
+    <div class="ds-dialog wf-delete-dialog" role="dialog" aria-modal="true"
+         aria-labelledby="wf-delete-title" (click)="$event.stopPropagation()">
+      <div class="ds-dialog__body">
+        <h2 class="ds-dialog__title" id="wf-delete-title">Delete workflow?</h2>
+        <p class="ds-dialog__text">
+          “{{ wf.name }}” will be permanently removed. This can’t be undone.
+        </p>
+      </div>
+
+      <div class="ds-dialog__divider" aria-hidden="true"></div>
+
+      <div class="ds-dialog__actions">
+        <button class="ds-button ds-button--text ds-button--md" type="button"
+                (click)="cancelDelete()">Cancel</button>
+        <button class="ds-button ds-button--destructive-outlined ds-button--md ds-button--leading-icon"
+                type="button"
+                (click)="confirmDelete()">
+          <span class="ds-icon" aria-hidden="true">delete</span>
+          Delete
+        </button>
       </div>
     </div>
   </div>
