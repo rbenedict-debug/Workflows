@@ -29,7 +29,9 @@ jobs:
           node-version: 22
           cache: npm
 
-      - run: npm ci
+      # npm install (not ci): the committed lockfile omits some cross-platform
+      # optional deps, which makes the stricter `npm ci` fail on the Linux runner.
+      - run: npm install
 
       # base-href must match the repo name so assets resolve under
       # https://<user>.github.io/Workflows/
