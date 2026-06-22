@@ -1,49 +1,55 @@
-# Onflo Project Template
+# Workflows — Onflo Automations Prototype
 
-Starter template for Onflo design prototypes. Used by designers and PMs to build
-working feature mockups using real Onflo components before engineering handoff.
+> ### ▶ Live prototype: **https://rbenedict-debug.github.io/Workflows/**
+> Opens straight to the Workflows screen — nothing to install, just open it in a browser.
 
----
+An interactive design prototype of the **Workflows** feature inside Onflo's **Automations**
+settings — the screens where teams build rules that automatically triage and act on incoming
+records like tickets, assets, and users (*"when a record matches these conditions, do these
+actions"*).
 
-## Getting started
-
-### 1. Create your project from this template
-
-Click **"Use this template"** at the top of this GitHub page and give your project a name.
-Then clone your new repo locally.
-
-### 2. Open in Claude Code
-
-Open the project folder in Claude Code. Claude will read the project setup automatically.
-
-If `node_modules/` doesn't exist yet, Claude will ask you to run `/setup-project` — do that first
-and it will walk you through everything.
-
-### 3. Start building
-
-Tell Claude what you're building. Example:
-
-> "Build me a page that shows a list of user accounts with a search bar and a way to add new users."
-
-Claude knows all the Onflo components and will build it using the real design system.
+It's built with the real [Onflo Design System](https://github.com/rbenedict-debug/Design-System),
+so it looks and behaves like the production product — for stakeholder review and design
+feedback ahead of engineering handoff.
 
 ---
 
-## Visual reference
+## What's inside
 
-Open `node_modules/@onflo/design-system/preview/index.html` in your browser after setup
-to see every available component, layout, and token with live demos.
-
----
-
-## Updating the design system
-
-When Rebecca releases a new DS version, run `/update-design-system` in Claude Code
-and it will handle the update automatically.
+| Screen | What it shows |
+|---|---|
+| **Workflows** | The list of automation workflows for a category + trigger — searchable, drag-to-reorder, with per-card actions (enable/disable, duplicate, move, delete) and a "test run" simulation. |
+| **Create / Edit workflow** | The builder: name, description, conditions (grouped rules), actions, tags, and expiry — with validation on save. |
+| **Execution Logs** | A history of past workflow runs. |
+| **Simulation results** | The outcome of testing a workflow against sample records. |
 
 ---
 
-## Handing off to engineering
+## Good to know
 
-When the prototype is ready, share this repo with the engineering team. They'll clone it,
-switch to engineering mode in the CLAUDE.md, and wire up the real data and behavior.
+- **It's a prototype, not the real product.** All data is mock — there's no backend, login, or
+  saving. Anything you change in the prototype (reordering, editing, deleting) lives only in the
+  current browser tab and resets on refresh.
+- **Built in "design mode"** on the Onflo Design System — real components and styling, no live
+  data wiring. Spots that need engineering are marked in the code with `TODO eng:` notes.
+
+---
+
+## Running it locally (optional)
+
+For anyone who wants to run it from source:
+
+```bash
+npm install
+npm start
+```
+
+Then open the URL Angular prints (usually `http://localhost:4200`).
+
+---
+
+## Keeping the live link current
+
+The prototype is published to GitHub Pages by a GitHub Actions workflow
+([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)) on every push to `main` — so the
+shared link above always reflects the latest commit. No manual deploy step needed.
